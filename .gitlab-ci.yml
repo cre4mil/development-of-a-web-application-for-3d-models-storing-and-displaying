@@ -1,0 +1,12 @@
+stages:
+  - lint
+
+php-lint:
+  stage: lint
+  image: php:8.2-cli
+  script:
+    - echo "Running PHP syntax check..."
+    - find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
+  only:
+    - main
+    - merge_requests

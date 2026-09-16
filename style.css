@@ -1,0 +1,1213 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* ส่วนหัวของเว็บไซต์ (Global Header) */
+.site-header {
+  background: #111;
+  color: #fff;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.site-header .logo {
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.site-header .logo .logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.site-header .logo .logo-icon i {
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.site-header nav {
+  display: flex;
+  gap: .25rem;
+  align-items: center;
+}
+
+.nav-link-c {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: .875rem;
+  padding: .4rem .8rem;
+  border-radius: 8px;
+  transition: .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+.nav-link-c:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.nav-link-c.active {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav-link-danger {
+  color: rgba(255,120,120,0.85) !important;
+}
+
+/* User avatar dropdown (for index.php, admin_orders.php, profile.php, model.php) */
+.user-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+.user-toggle:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+.dropdown-menu {
+  margin-top: 0.5rem !important;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  /* จัดตรงกลางแนวนอน */
+  margin: 20px 0;
+}
+
+.search-bar form {
+  max-width: 500px;
+  /* ให้ฟอร์มไม่กว้างเกินไป */
+  width: 100%;
+}
+
+
+
+/* การแสดงผลโมเดล */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* การ์ดหลัก */
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* รูปภาพแสดงเต็มการ์ด */
+.card img {
+  width: 100%;
+  height: 300px;
+  /* ✅ ขนาดเท่าเดิม */
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ซ่อนชื่อและแถบล่างสีขาว */
+.card-body {
+  display: none !important;
+}
+
+/* ปุ่มต่าง ๆ */
+.gallery .card {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery .card .card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+
+/* ปุ่มเบอร์เกอร์และปุ่มไลค์ให้เท่ากัน */
+.gallery .card .action-toggle,
+.gallery .card .like-toggle {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+  cursor: pointer;
+}
+
+/* ตำแหน่งปุ่มหัวใจ */
+.gallery .card .like-toggle {
+  position: absolute;
+  top: 52px;
+  /* ถัดจากเบอร์เกอร์ลงมา */
+  right: 8px;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji",
+    "Segoe UI Symbol", system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* สีหัวใจตอน liked */
+.gallery .card .like-toggle.liked {
+  color: #e11d48;
+}
+
+
+/* ข้อความเมื่อไม่มีโมเดล */
+.no-models {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  color: #777;
+}
+
+/* ข้อความแจ้งเตือน */
+.alert {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+
+/* ใช้ flexbox เพื่อให้ footer อยู่ข้างล่างสุด */
+html,
+body {
+  height: 100%;
+  /* ให้ทั้งหน้าเว็บเต็มพื้นที่ */
+  margin: 0;
+  /* กำจัดขอบ */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* ให้เนื้อหาทั้งหมดอยู่ในพื้นที่เต็ม */
+}
+
+main {
+  flex: 1;
+  /* ให้เนื้อหาหลักขยายเต็มพื้นที่ที่เหลือ */
+}
+
+/* ===== Pagination Section ===== */
+.pagination-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination .page-link {
+  border-radius: 8px;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: #ddd;
+  color: #333;
+}
+
+.pagination .page-link:hover {
+  background: #ffca28;
+  color: #000;
+  border-color: #ffb300;
+}
+
+.pagination .page-item.disabled .page-link {
+  background: #ddd;
+  color: #000;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* ===== Footer ===== */
+.footer {
+  width: 100%;
+  background: #2f2f2f;
+  color: #fff;
+  padding: 30px 0;
+  text-align: center;
+  margin-top: 50px;
+  position: relative;
+  left: 0;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  color: #ffd54f;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: #fff176;
+}
+
+.footer-left,
+.footer-right {
+  flex: 50%;
+  min-width: 250px;
+  margin: 8px 0;
+}
+
+.footer h4 {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/* ===== Sticky footer when few items ===== */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: auto;
+}
+
+/* ขนาดและพื้นหลังของ modal */
+.upload-modal .modal-dialog {
+  max-width: 920px;
+}
+
+.upload-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #dfe5ea;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, 0.2);
+  background: #fff;
+}
+
+/* หัวข้อ */
+.upload-modal .modal-header {
+  border: none;
+  padding-bottom: 0;
+}
+
+.upload-modal .modal-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ฟอร์ม upload */
+.upload-modal .upload-form .form-label {
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 6px;
+  color: #2b2f3a;
+}
+
+.upload-modal .upload-form .form-control {
+  border: 1px solid #dfe5ea;
+  border-radius: 12px;
+  background: #fafbfd;
+  color: #2b2f3a;
+  padding: 12px 14px;
+  transition: border-color 220ms, box-shadow 220ms;
+}
+
+.upload-modal .upload-form .form-control:focus {
+  border-color: #b9dcff;
+  box-shadow: 0 0 0 4px rgba(42, 166, 255, 0.16);
+  outline: none;
+}
+
+.upload-modal .upload-form textarea.form-control {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* input[type=file] เป็นกล่องเส้นประ */
+.upload-modal .upload-form input[type="file"].form-control {
+  padding: 40px 14px;
+  text-align: center;
+  background: #fff;
+  border: 2px dashed #cfd8e3;
+  border-radius: 14px;
+}
+
+.upload-modal .upload-form input[type="file"].form-control:hover {
+  background: #f8fbff;
+  border-color: #b9dcff;
+}
+
+.upload-modal .upload-form input[type="file"].form-control::file-selector-button {
+  margin-right: 12px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #2aa6ff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#uploadModal .modal-footer {
+  border-top: 0;
+  padding: 16px 20px 20px;
+  gap: 12px;
+}
+
+#uploadModal .modal-footer .btn-primary {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  width: 20%;
+  font-weight: 700;
+  background: #007bff;
+  box-shadow: 0 10px 22px rgba(255, 125, 0, .22);
+  align-self: flex-end;
+  /* ดันปุ่มไปขวาสุด */
+}
+
+#uploadModal .modal-footer .btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  #uploadModal .modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #uploadModal .modal-footer .left-buttons,
+  #uploadModal .modal-footer .right-buttons {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  #uploadModal .modal-footer .btn {
+    width: 100%;
+  }
+}
+
+/* ===== Login Modal (โทนเดียวกับ Register) ===== */
+.login-modal .modal-dialog {
+  max-width: 420px;
+}
+
+.login-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #dfe5ea;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, .2);
+}
+
+.login-modal .modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.login-modal .login-form .form-label {
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 6px;
+  color: #2b2f3a;
+}
+
+.login-modal .login-form .form-control {
+  border: 1px solid #dfe5ea;
+  border-radius: 12px;
+  background: #fafbfd;
+  color: #2b2f3a;
+  padding: 12px 14px;
+  transition: border-color 220ms, box-shadow 220ms;
+}
+
+.login-modal .login-form .form-control:focus {
+  border-color: #b9dcff;
+  box-shadow: 0 0 0 4px rgba(42, 166, 255, .16);
+  outline: none;
+}
+
+.login-modal .login-form .btn-primary {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  transition: transform 200ms, box-shadow 200ms;
+}
+
+.login-modal .login-form .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(59, 130, 246, .28);
+}
+
+.login-modal .login-form .btn-link {
+  color: #2aa6ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-modal .login-form .btn-link:hover {
+  text-decoration: underline;
+}
+
+/* พื้นหลังตอนเปิด modal จางกำลังดี */
+.modal-backdrop.show {
+  opacity: .45;
+}
+
+/* ขนาด/เงา/ทรง modal */
+.register-modal .modal-dialog {
+  max-width: 520px;
+}
+
+.register-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #dfe5ea;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, .2);
+}
+
+.register-modal .modal-header {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.register-modal .modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+/* ===== Modal frame ให้โค้ง/เงาแบบภาพ ===== */
+.register-modal .modal-content {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .18);
+}
+
+.register-modal .modal-header {
+  border-bottom: 0;
+  padding-bottom: 0.25rem;
+}
+
+.register-modal .modal-title {
+  font-weight: 800;
+}
+
+/* ===== ฟอร์ม (ของเดิมคุณยังใช้ได้) ===== */
+.register-modal .register-form label {
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 6px;
+  color: #2b2f3a;
+}
+
+.register-modal .register-form .form-control {
+  border: 1px solid #dfe5ea;
+  border-radius: 12px;
+  background: #fafbfd;
+  color: #2b2f3a;
+  padding: 12px 14px;
+  transition: border-color 220ms, box-shadow 220ms;
+}
+
+.register-modal .register-form .form-control:focus {
+  border-color: #b9dcff;
+  box-shadow: 0 0 0 4px rgba(42, 166, 255, .16);
+  outline: none;
+}
+
+/* ===== ลิงก์เข้าสู่ระบบ ===== */
+.register-modal .register-form .btn-link {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  color: #2aa6ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-modal .register-form .btn-link:hover {
+  text-decoration: underline;
+}
+
+/* ปรับพื้นหลังและสีตัวอักษรให้เหมือน input ปกติ */
+.register-modal .register-form input:-webkit-autofill,
+.register-modal .register-form input:-webkit-autofill:hover,
+.register-modal .register-form input:-webkit-autofill:focus,
+.register-modal .register-form textarea:-webkit-autofill {
+  -webkit-text-fill-color: #2b2f3a !important;
+  transition: background-color 9999s ease-out 0s;
+  /* กัน Flash สีเหลือง */
+  box-shadow: 0 0 0px 1000px #fafbfd inset !important;
+  /* ทับพื้นเหลือง */
+  caret-color: #2b2f3a;
+}
+
+/* Safari บางเวอร์ชันต้องใส่ ::first-line เพื่อคุมสีข้อความบรรทัดแรก */
+.register-modal .register-form input:-webkit-autofill::first-line {
+  color: #2b2f3a;
+  font-size: 14px;
+}
+
+.register-modal .register-form .signup-btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  /* กันแบน */
+  line-height: 44px;
+  /* จัดกลางแนวตั้งแบบง่าย */
+  padding: 0 16px;
+  /* ความสูงใช้ line-height แทน */
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #fff !important;
+  /* กันโดนเปลี่ยนสี */
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  text-align: center;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.register-modal .register-form .signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(34, 197, 94, .28);
+}
+
+.register-modal .register-form .signup-btn:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+/* ปุ่ม ⋮ บนการ์ด (กันไว้ กรณี style.css ไม่มี) */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-actions {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  z-index: 2;
+}
+
+.action-toggle {
+  padding: 6px 8px;
+  line-height: 1;
+  background: #ffffffcc;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+}
+
+.action-toggle:hover {
+  background: #fff;
+  border-color: #d9dee5;
+}
+
+/* Modal viewer look คล้าย Sketchfab */
+.model-modal .modal-dialog {
+  max-width: 1200px;
+  /* กว้างใหญ่บนจอใหญ่ */
+}
+
+.model-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, .2);
+}
+
+.viewer-wrap {
+  position: relative;
+  width: 100%;
+  height: 75vh;
+  /* พื้นที่แสดงโมเดล */
+  background: #333333;
+  /* ดำด้าน */
+  overflow: hidden;
+}
+
+@media (max-width: 991px) {
+  .viewer-wrap {
+    height: 65vh;
+  }
+}
+
+.viewer-wrap canvas {
+  display: block;
+}
+
+.model-title {
+  font-weight: 800;
+}
+
+.model-desc {
+  color: #6b7280;
+}
+
+/* ====== Modal Edit (match Upload look) ====== */
+#editModal .modal-dialog {
+  max-width: 920px;
+}
+
+#editModal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #dfe5ea;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, .2);
+  background: #fff;
+  color: #2b2f3a;
+}
+
+/* header แบบเดียวกับ upload */
+#editModal .modal-header {
+  border: 0;
+  padding-bottom: 0;
+  background: transparent;
+}
+
+#editModal .modal-title {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ฟอร์มภายใน */
+#editModal .modal-body {
+  padding: 20px;
+}
+
+#editModal .form-label {
+  font-weight: 700;
+  font-size: 14.5px;
+  margin-bottom: 6px;
+  color: #2b2f3a;
+}
+
+#editModal .form-control {
+  border: 1px solid #dfe5ea;
+  border-radius: 12px;
+  background: #fafbfd;
+  color: #2b2f3a;
+  padding: 12px 14px;
+  transition: border-color 220ms, box-shadow 220ms;
+}
+
+#editModal .form-control:focus {
+  border-color: #b9dcff;
+  padding: 12px 14px;
+  box-shadow: 0 0 0 4px rgba(42, 166, 255, .16);
+  outline: none;
+}
+
+#editModal textarea.form-control {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* input file แบบเส้นประ (เหมือน upload) */
+#editModal input[type="file"].form-control {
+  padding: 40px 14px;
+  text-align: center;
+  background: #fff;
+  border: 2px dashed #cfd8e3;
+  border-radius: 14px;
+}
+
+#editModal input[type="file"].form-control:hover {
+  background: #f8fbff;
+  border-color: #b9dcff;
+}
+
+#editModal input[type="file"].form-control::file-selector-button {
+  margin-right: 12px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #2aa6ff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* footer + ปุ่มหลักให้หน้าตาเดียวกับ upload */
+#editModal .modal-footer {
+  border-top: 0;
+  padding: 16px 20px 20px;
+  gap: 12px;
+}
+
+#editModal .btn-primary {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  width: 20%;
+  font-weight: 700;
+  background: #007bff;
+  box-shadow: 0 10px 22px rgba(255, 125, 0, .22);
+}
+
+#editModal .btn-secondary {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: #e8ecf1;
+  color: #111827;
+}
+
+/* ===== ปุ่มลบโมเดลใน modal edit ===== */
+#editModal .btn-danger {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #e11d48, #f43f5e);
+  color: #f8fbff;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  margin-right: auto;
+  /* ดันปุ่มไปฝั่งซ้ายสุด */
+}
+
+/* เพิ่ม hover effect */
+#editModal .btn-danger:hover {
+  background: linear-gradient(135deg, #be123c, #e11d48);
+  transform: scale(1.03);
+}
+
+/* จัด layout ของ footer ให้รองรับปุ่มซ้าย-ขวา */
+#editModal .modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ปุ่มอื่น ๆ ใน footer */
+#editModal .modal-footer .btn {
+  min-width: 110px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  #editModal .modal-body {
+    padding: 18px 16px;
+  }
+
+  #editModal .modal-footer>* {
+    width: 100%;
+  }
+}
+
+/* ==== Viewer tweaks ==== */
+#modelModal .modal-content {
+  position: relative;
+}
+
+/* ทำให้พื้นหลัง viewer เป็นสีเดียวทุกชั้น */
+#modelModal .viewer-wrap,
+#modelModal #viewer,
+#modelModal #viewer canvas {
+  background: #333333 !important;
+}
+
+/* ให้ #viewer กินเต็มพื้นที่ของ .viewer-wrap */
+#modelModal .viewer-wrap {
+  position: relative;
+}
+
+#modelModal #viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#modelModal #viewer canvas {
+  display: block;
+  /* ตัดช่องว่าง inline */
+  width: 100% !important;
+  /* กันสไตล์หลงเหลือ */
+  height: 100% !important;
+}
+
+
+/* คำอธิบาย: ตัวใหญ่ + หนา (เฉพาะบรรทัดคำอธิบาย) */
+#modelModal #viewerDesc .viewer-desc-text {
+  display: block;
+  font-size: 18px;
+  /* ปรับได้ เช่น 20px */
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+/* meta ใต้คำอธิบายให้เล็ก/จางลง */
+#modelModal #viewerDesc .viewer-meta {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ปุ่มดาวน์โหลดให้ลง-ขวาอีก */
+#modelModal #viewerDownload {
+  position: absolute;
+  right: 18px;
+  /* ขยับขวาสุด */
+  bottom: 12px;
+  /* ขยับลงล่าง */
+  margin: 0;
+  /* ตัด margin เดิมของ bootstrap */
+  z-index: 5;
+}
+
+@media (max-width: 576px) {
+  #modelModal #viewerDownload {
+    right: 12px;
+    bottom: 8px;
+  }
+}
+
+/* โครงสร้างหน้าเดิมของคุณคงไว้ เพิ่มแค่ส่วนนี้ */
+.viewer-wrap {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  min-height: 420px;
+  background: #d9d9d9;
+}
+
+#viewer {
+  position: absolute;
+  inset: 0;
+}
+
+.rotate-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 72px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .65);
+  color: #333;
+  font-size: 14px;
+  pointer-events: none;
+  backdrop-filter: blur(3px);
+}
+
+.rotate-hint i {
+  font-size: 20px;
+  animation: swipe 2.2s ease-in-out infinite;
+}
+
+@keyframes swipe {
+
+  0%,
+  100% {
+    transform: translateX(0)
+  }
+
+  35% {
+    transform: translateX(10px)
+  }
+
+  70% {
+    transform: translateX(-10px)
+  }
+}
+
+.model-info {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  max-width: 320px;
+  font: 12px/1.45 system-ui, Segoe UI, Roboto, Arial;
+  pointer-events: none;
+}
+
+.model-info h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+.model-info .mono {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* center ทั้งแนวนอน-แนวตั้ง เมื่อไม่มีการ์ด */
+.container.py-4:has(.gallery:empty) {
+  min-height: calc(100vh - 140px);
+  /* เผื่อความสูง header/top bar นิดนึง */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* กลางแนวตั้ง */
+  align-items: center;
+  /* กลางแนวนอน */
+}
+
+/* ให้ข้อความว่างดูเป็นบรรทัดเดียวกับหัวข้อ */
+.container.py-4:has(.gallery:empty) .gallery {
+  display: none;
+}
+
+/* ====== TOP BAR เหมือนหน้าตัวอย่าง ====== */
+.profile-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 56px;
+  width: 100%;
+  background: #333;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.profile-topbar .profile-container {
+  /* อย่าใช้ .container ของ Bootstrap เพราะมี max-width; ชื่อเฉพาะแทน */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.profile-topbar .brand-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.profile-topbar .right a,
+.profile-topbar .left a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.profile-topbar .right a:hover,
+.profile-topbar .left a:hover {
+  opacity: .9;
+}
+
+/* ====== โครงหน้า ====== */
+body.profile {
+  margin: 0;
+  background: #f5f6f8;
+  color: #1b1c1d;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.profile-header {
+  text-align: center;
+  margin: 28px 0 10px;
+}
+
+.profile-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.profile-sub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.profile-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8px 16px 48px;
+}
+
+.profile-empty {
+  text-align: center;
+  color: #6b7280;
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+.cancel-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: darkred;
+}
+
+/* ===== Pagination Centered and Fixed Position ===== */
+.pagination-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 80px;
+  /* กันไม่ให้ footer ชิดเกินไป */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+/* กัน footer ลอยขึ้น ถ้าโมเดลน้อย */
+.gallery-container {
+  min-height: 70vh;
+  /* ปรับให้หน้าเต็มและ pagination อยู่ที่ล่าง */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ====== Viewer Toolbar ====== */
+.viewer-toolbar {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(30, 30, 46, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  display: flex;
+  gap: 15px;
+  padding: 10px 16px;
+  z-index: 9;
+}
+.viewer-toolbar-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.viewer-toolbar-btn:hover {
+  color: #0dcaf0;
+}
+.viewer-toolbar-btn.active {
+  color: #ffffff;
+}
+
+/* ====== Model Inspector UI ====== */
+.model-inspector { position: absolute; top: 0; left: 0; width: 260px; height: 100%; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(255,255,255,0.1); z-index: 10; color: #ddd; display: flex; flex-direction: column; overflow-y: auto; font-size: 0.85rem; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 5px 0 15px rgba(0,0,0,0.5); text-align: left; }
+.model-inspector.active { transform: translateX(0); }
+.model-inspector::-webkit-scrollbar { width: 6px; }
+.model-inspector::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+.inspector-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); font-weight: 600; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); color: #fff; }
+.inspector-section { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.inspector-section-title { font-size: 0.72rem; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+.inspector-btn { display: flex; align-items: center; gap: 12px; padding: 8px 12px; width: 100%; background: transparent; border: none; color: #aaa; text-align: left; border-radius: 8px; cursor: pointer; margin-bottom: 4px; transition: all 0.2s ease; }
+.inspector-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.inspector-btn.active { background: rgba(255, 255, 255, 0.15); color: #fff; font-weight: 600; border-left: 3px solid #fff; padding-left: 9px; }
+.inspector-btn i { font-size: 1.15rem; width: 20px; text-align: center; }
+
+/* ====== Color Swatches ====== */
+.color-swatch { width: 24px; height: 24px; border-radius: 4px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; padding: 0; display: inline-block; }
+.color-swatch:hover { transform: scale(1.1); }
+.color-swatch.active { border-color: #fff; box-shadow: 0 0 5px rgba(255,255,255,0.8); }
+.checker-swatch { background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; background-color: #fff; }
