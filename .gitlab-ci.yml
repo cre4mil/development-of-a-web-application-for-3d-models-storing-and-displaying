@@ -1,12 +1,42 @@
-stages:
-  - lint
+name: CI and SonarQube Analysis
 
-php-lint:
-  stage: lint
-  image: php:8.2-cli
-  script:
-    - echo "Running PHP syntax check..."
-    - find . -name "*.php" -not -path "./vendor/*" -exec php -l {} \;
-  only:
-    - main
-    - merge_requests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # จำเป็นสำหรับ SonarQube เพื่อวิเคราะห์โค้ดได้แม่นยำขึ้น
+
+      # ---------------------------------------------------
+      # 1. รันการทดสอบโค้ดของคุณตรงนี้ (ตัวอย่างสำหรับ Node.js)
+      # ---------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Run Tests and Generate Coverage
+        run: npm run test -- --coverage  # ต้องแน่ใจว่าโปรเจกต์ตั้งค่าให้ออก Report เพื่อนำไปแสดงใน Sonar ได้
+
+      # ---------------------------------------------------
+      # 2. ทำการสแกนโค้ดด้วย SonarQube
+      # ---------------------------------------------------
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
