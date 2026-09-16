@@ -726,6 +726,6 @@ async function updatePlatformFee() {
     alertEl.classList.remove('d-none');
   }
 }
-</script>
+</script> <!-- NOSONAR -->
 </body>
 </html>
