@@ -1,0 +1,41 @@
+name: CI and SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test-and-scan:
+    name: Test and SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # ต้องใช้ fetch-depth: 0 เพื่อให้ SonarCloud วิเคราะห์ประวัติไฟล์ (Blame) ได้ถูกต้อง
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: xdebug # เปิดใช้งาน xdebug เพื่อให้ทำ Code Coverage ได้
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run PHPUnit Tests
+        run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover coverage.xml --log-junit report.xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub มีให้อัตโนมัติอยู่แล้ว
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # ต้องไปตั้งค่าใน GitHub Secrets
