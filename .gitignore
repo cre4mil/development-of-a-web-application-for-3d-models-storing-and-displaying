@@ -1,0 +1,28 @@
+# Uploaded files (user content)
+uploads/*
+!uploads/.gitkeep
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Composer / PHP dependencies
+/vendor/
+composer.phar
+
+# PHPUnit coverage reports
+coverage.xml
+report.xml
+/coverage-html/
+
+# SonarQube cache
+.sonar/

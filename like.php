@@ -46,32 +46,38 @@ $models = $st->fetchAll();
 <head>
   <meta charset="utf-8">
   <title>โมเดลที่ชอบ – 3D Gallery</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=<?= filemtime('style.css') ?>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-<header>
-  <div class="container d-flex justify-content-between align-items-center">
-    <a href="index.php" class="logo">3D Gallery</a>
+<header class="site-header">
+  <div class="container">
+    <a href="index.php" class="logo">
+      <span class="logo-icon"><i class="bi bi-box"></i></span>
+      3D Gallery
+    </a>
     <nav>
-      <ul>
-        <li class="nav-item dropdown">
-          <a href="#" class="user-toggle" data-bs-toggle="dropdown">
-            <span class="avatar-circle"><?= htmlspecialchars(strtoupper(substr($_SESSION['uname'],0,1))) ?></span>
-            <span class="d-none d-sm-inline"><?= htmlspecialchars($_SESSION['uname']) ?></span>
-            <span class="ms-1">▾</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li class="dropdown-header"><div class="name"><?= htmlspecialchars($_SESSION['uname']) ?></div><div class="meta">เข้าสู่ระบบแล้ว</div></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="profile.php">โปรไฟล์</a></li>
-            <li><a class="dropdown-item" href="like.php">โมเดลที่ชอบ</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="logout.php">ออกจากระบบ</a></li>
-          </ul>
-        </li>
-      </ul>
+      <div class="nav-item dropdown d-inline-block">
+        <a href="#" class="user-toggle dropdown-toggle" data-bs-toggle="dropdown">
+          <span class="avatar-circle"><?= htmlspecialchars(strtoupper(substr($_SESSION['uname'],0,1))) ?></span>
+          <span class="d-none d-sm-inline"><?= htmlspecialchars($_SESSION['uname']) ?></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow">
+          <li class="dropdown-header">
+            <div class="name fw-bold text-dark"><?= htmlspecialchars($_SESSION['uname']) ?></div>
+            <div class="meta">เข้าสู่ระบบแล้ว</div>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="index.php"><i class="bi bi-house me-1"></i> หน้าหลัก</a></li>
+          <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-1"></i> โปรไฟล์</a></li>
+          <li><a class="dropdown-item" href="like.php"><i class="bi bi-heart me-1"></i> โมเดลที่ชอบ</a></li>
+          <li><a class="dropdown-item" href="payment.php"><i class="bi bi-credit-card me-1"></i> ชำระเงิน / การสั่งซื้อ</a></li>
+          <li><a class="dropdown-item" href="creator_earnings.php"><i class="bi bi-cash-stack me-1"></i> รายได้</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-1"></i> ออกจากระบบ</a></li>
+        </ul>
+      </div>
     </nav>
   </div>
 </header>

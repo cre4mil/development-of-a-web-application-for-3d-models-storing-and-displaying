@@ -16,7 +16,7 @@ if ($email === '' || $password === '') {
 
 try {
   // ดึงผู้ใช้จากอีเมล
-  $st = $pdo->prepare("SELECT id, username, password FROM users WHERE email = ? LIMIT 1");
+  $st = $pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE email = ? LIMIT 1");
   $st->execute([$email]);
   $u = $st->fetch();
 
@@ -25,6 +25,7 @@ try {
     header('Location: index.php'); exit;
   }
 
+  
   $hash = $u['password'];
 
   // ✅ รองรับฐานข้อมูลเดิมที่เก็บรหัสแบบ plain text:
@@ -46,6 +47,7 @@ try {
 
   $_SESSION['uid']   = (int)$u['id'];
   $_SESSION['uname'] = $u['username'];
+  $_SESSION['is_admin'] = (int)$u['is_admin'];
   session_regenerate_id(true);
 
   header('Location: index.php'); exit;

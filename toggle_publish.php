@@ -11,5 +11,5 @@ $q = "UPDATE models m
 $st = $pdo->prepare($q);
 $st->execute(['id'=>$id, 'uid'=>$uid]);
 
-header('Location: my_models.php'); 
+header('Location: profile.php'); 
 exit;

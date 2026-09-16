@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $host = '127.0.0.1';   
-$port = '3307';
+$port = '3306';
 $db      = 'db_3dmodels'; 
 $user    = 'root';        
 $pass    = '';            
@@ -25,4 +25,21 @@ try {
     http_response_code(500);
     exit('DB connect error: ' . $e->getMessage());
 }
+
+// Central Payment Config
+// method สามารถเลือกเป็น: promptpay, truemoney, kbank, scb, bbl, ktb, krungsri
+define('PAYMENT_METHOD',  'promptpay'); 
+define('PAYMENT_ACCOUNT', '0949491035');
+define('PAYMENT_NAME',    'ปาณิสรา กุลคำ');
+
+// SlipOK API Config
+define('SLIPOK_API_KEY', ''); // ใส่ API Key จาก SlipOK ถ้าต้องการตรวจสอบอัตโนมัติ
+define('SLIPOK_BRANCH_ID', ''); // สาขา (ถ้ามี)
+
+// ===== Centralized Payment Config =====
+// ค่าธรรมเนียมแพลตฟอร์ม (%) ที่หักจากราคาโมเดลก่อนโอนให้ Creator
+define('PLATFORM_FEE_PCT',   10);   // 10%
+
+// ยอดขั้นต่ำที่ Creator ต้องสะสมก่อนถอนเงินได้
+define('PAYOUT_THRESHOLD',   300);  // 300 บาท
 
