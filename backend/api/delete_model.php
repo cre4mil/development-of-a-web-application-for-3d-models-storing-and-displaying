@@ -29,7 +29,7 @@ if ($mid <= 0) {
   exit;
 }
 
-$st = $pdo->prepare("SELECT id, user_id, filename, thumb FROM models WHERE id=?");
+$st = $pdo->prepare("SELECT id, user_id, filename, file_gltf, file_glb, file_usdz, file_obj, thumb FROM models WHERE id=?");
 $st->execute([$mid]);
 $model = $st->fetch(PDO::FETCH_ASSOC);
 
@@ -43,6 +43,7 @@ $pdo->beginTransaction();
 try {
   $pdo->prepare("DELETE FROM likes        WHERE model_id=?")->execute([$mid]);
   $pdo->prepare("DELETE FROM collections  WHERE model_id=?")->execute([$mid]);
+  $pdo->prepare("DELETE FROM comments     WHERE model_id=?")->execute([$mid]);
 
   $pdo->prepare("DELETE FROM models WHERE id=? AND user_id=?")->execute([$mid, $uid]);
 
@@ -55,12 +56,16 @@ try {
 }
 
 $deletedFiles = [];
-$base = __DIR__ . '/uploads/';
-$main = $base . $model['filename'];
-$thumb= $base . ($model['thumb'] ?? '');
+$base = dirname(__DIR__, 2) . '/frontend/uploads/';
+$files = [
+  $model['filename'], $model['file_gltf'], $model['file_glb'],
+  $model['file_usdz'], $model['file_obj'], $model['thumb'],
+];
 
-foreach ([$main,$thumb] as $path) {
-  if ($path && is_file($path)) {
+foreach ($files as $f) {
+  if (!$f) continue;
+  $path = $base . $f;
+  if (is_file($path)) {
     @unlink($path);
     $deletedFiles[] = basename($path);
   }

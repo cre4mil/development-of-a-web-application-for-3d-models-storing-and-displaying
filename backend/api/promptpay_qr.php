@@ -42,7 +42,9 @@ if (empty($account)) {
     exit;
 }
 
-if ($method === 'promptpay' || $method === 'truemoney') {
+$isQrMethod = ($method === 'promptpay' || $method === 'truemoney');
+
+if ($isQrMethod) {
     $payload = generatePromptPayPayload($account, $amount);
 } else {
     // Other banks don't have standard PromptPay QR payloads automatically unless they registered PromptPay.
@@ -50,13 +52,21 @@ if ($method === 'promptpay' || $method === 'truemoney') {
     $payload = '';
 }
 
-echo json_encode([
-    'method'        => $method,
-    'payload'       => $payload,
-    'amount'        => $amount,
-    'account'       => $account,
-    'name'          => $name,
-]);
+$response = [
+    'method'  => $method,
+    'payload' => $payload,
+    'amount'  => $amount,
+];
+
+// The QR payload already encodes the PromptPay account; the raw account/name
+// is only needed by the frontend for manual bank-transfer methods, so it's
+// omitted here rather than disclosed to any anonymous caller.
+if (!$isQrMethod) {
+    $response['account'] = $account;
+    $response['name']    = $name;
+}
+
+echo json_encode($response);
 
 // ========== PromptPay EMVCo Payload Generator ==========
 
@@ -132,22 +142,4 @@ function crc16ccitt(string $data): int {
         }
     }
     return $crc;
-}
-
-/**
- * ปิดบังเลขบัญชีสำหรับแสดงผลด้าน frontend
- */
-function maskPaymentAccount(string $id): string {
-    $id = preg_replace('/\D/', '', $id);
-    $len = strlen($id);
-    $maskedAccount = $id;
-    if ($len === 10) {
-        $maskedAccount = substr($id, 0, 3) . '-xxx-' . substr($id, -2);
-    } elseif ($len === 13) {
-        $maskedAccount = substr($id, 0, 1) . '-xxxx-xxxxx-' . substr($id, -3, 2) . '-' . substr($id, -1);
-    } elseif ($len > 4) {
-        $maskedAccount = str_repeat('x', max(0, $len - 4)) . substr($id, -4);
-    }
-
-    return $maskedAccount;
 }

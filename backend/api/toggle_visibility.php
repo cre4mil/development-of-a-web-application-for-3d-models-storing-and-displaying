@@ -1,5 +1,9 @@
 <?php
 require_once dirname(__DIR__) . '/config/database.php';
+require_once dirname(__DIR__) . '/services/Security.php';
+
+use App\Services\Security;
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -15,6 +19,10 @@ $to  = (int)($_POST['is_public'] ?? 1);
 
 if (!$uid || !$id) {
   echo json_encode(['ok'=>false,'message'=>'bad request']); exit;
+}
+
+if (!Security::isValidCsrfToken($_POST['csrf'] ?? null, $_SESSION['csrf'] ?? null)) {
+  echo json_encode(['ok'=>false,'message'=>'bad_csrf']); exit;
 }
 
 try {

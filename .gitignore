@@ -30,3 +30,6 @@ report.xml
 
 # SonarQube cache
 .sonar/
+
+# PHPUnit local cache
+.phpunit.result.cache

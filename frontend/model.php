@@ -429,6 +429,7 @@ $csrf    = $_SESSION['csrf'] ?? '';
 <script>
 const MODEL_ID = <?= $mid ?>;
 const CUR_UID  = <?= $uid ?>;
+const CSRF_TOKEN = <?= json_encode($csrf) ?>;
 const MODEL_FILE = '<?= addslashes($file) ?>';
 const MODEL_EXT  = '<?= $ext ?>';
 
@@ -734,8 +735,9 @@ document.getElementById('btnLike')?.addEventListener('click', async function(){
   this.dataset.liked=liked?'0':'1';
   this.disabled=true;
 
-  fetch('like_action.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'id='+this.dataset.id})
-    .catch(()=>{});
+  fetch('like.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'id='+this.dataset.id})
+    .then(res=>{ if(!res.ok) throw new Error('like_failed'); })
+    .catch(()=>{ this.dataset.liked=liked?'1':'0'; });
 
   let cnt = document.getElementById('likeCountTop');
   let txt = document.getElementById('likeCount');
@@ -785,8 +787,9 @@ document.getElementById('btnSave')?.addEventListener('click', function() {
   this.dataset.saved=saved?'0':'1';
   this.disabled=true;
 
-  fetch('collection_action.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'id='+this.dataset.id})
-    .catch(()=>{});
+  fetch('collection.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'model_id='+this.dataset.id})
+    .then(res=>{ if(!res.ok) throw new Error('save_failed'); })
+    .catch(()=>{ this.dataset.saved=saved?'1':'0'; });
 
   let txt = document.getElementById('saveText');
   if(!saved) {
@@ -827,7 +830,7 @@ function escHtml(t){ const d=document.createElement('div'); d.textContent=t; ret
 document.getElementById('commentList')?.addEventListener('click', async e=>{
   const btn=e.target.closest('.del-comment'); if(!btn) return;
   if(!confirm('ลบความคิดเห็นนี้?')) return;
-  const res=await fetch('comment.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=delete&id='+btn.dataset.id});
+  const res=await fetch('comment.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=delete&id='+btn.dataset.id+'&csrf='+encodeURIComponent(CSRF_TOKEN)});
   const d=await res.json();
   if(d.ok){ btn.closest('.comment-item').remove(); }
 });
@@ -836,7 +839,7 @@ document.getElementById('commentForm')?.addEventListener('submit', async e=>{
   e.preventDefault();
   const body=document.getElementById('commentBody').value.trim();
   if(!body) return;
-  const res=await fetch('comment.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=add&model_id='+MODEL_ID+'&body='+encodeURIComponent(body)});
+  const res=await fetch('comment.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=add&model_id='+MODEL_ID+'&body='+encodeURIComponent(body)+'&csrf='+encodeURIComponent(CSRF_TOKEN)});
   const d=await res.json();
   if(d.ok){ document.getElementById('commentBody').value=''; loadComments(); }
 });

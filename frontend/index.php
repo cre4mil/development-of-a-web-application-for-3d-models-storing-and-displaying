@@ -771,27 +771,33 @@ document.querySelectorAll('.btn-like-toggle').forEach(btn => {
       <?php endif ?>
       this.disabled = true;
       const id = this.dataset.id;
-      const res = await fetch('like_action.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'id='+id});
-      const data = await res.json();
+      try {
+        const res = await fetch('like.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'id='+id});
+        if (!res.ok) throw new Error('like_failed');
+        await res.json();
 
-      const isLiked = this.dataset.liked === '1';
-      this.dataset.liked = isLiked ? '0' : '1';
+        const isLiked = this.dataset.liked === '1';
+        this.dataset.liked = isLiked ? '0' : '1';
 
-      const icon = this.querySelector('i');
-      let valSpan = this.closest('.card').querySelector('.like-counter-val');
+        const icon = this.querySelector('i');
+        let valSpan = this.closest('.card').querySelector('.like-counter-val');
 
-      if (!isLiked) {
-        this.classList.remove('btn-light', 'text-muted');
-        this.classList.add('btn-danger', 'text-white');
-        icon.className = 'bi bi-heart-fill';
-        if(valSpan) valSpan.textContent = parseInt(valSpan.textContent) + 1;
-      } else {
-        this.classList.remove('btn-danger', 'text-white');
-        this.classList.add('btn-light', 'text-muted');
-        icon.className = 'bi bi-heart';
-        if(valSpan) valSpan.textContent = Math.max(0, parseInt(valSpan.textContent) - 1);
+        if (!isLiked) {
+          this.classList.remove('btn-light', 'text-muted');
+          this.classList.add('btn-danger', 'text-white');
+          icon.className = 'bi bi-heart-fill';
+          if(valSpan) valSpan.textContent = parseInt(valSpan.textContent) + 1;
+        } else {
+          this.classList.remove('btn-danger', 'text-white');
+          this.classList.add('btn-light', 'text-muted');
+          icon.className = 'bi bi-heart';
+          if(valSpan) valSpan.textContent = Math.max(0, parseInt(valSpan.textContent) - 1);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.disabled = false;
       }
-      this.disabled = false;
     });
   });
 
@@ -823,7 +829,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('click',async e=>{
   const btn=e.target.closest('.js-toggle-public');if(!btn)return;e.preventDefault();
   const id=btn.dataset.id,cur=Number(btn.dataset.public)||0,nxt=cur?0:1;btn.disabled=true;
-  const res=await fetch('toggle_visibility.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({id,is_public:nxt})});
+  const res=await fetch('toggle_visibility.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({id,is_public:nxt,csrf:<?= json_encode($_SESSION['csrf']) ?>})});
   const d=await res.json();
   if(d?.ok){btn.dataset.public=String(nxt);btn.textContent=nxt?'ไม่แสดงบนหน้าหลัก':'แสดงบนหน้าหลัก';}
   btn.disabled=false;

@@ -322,7 +322,7 @@ document.addEventListener('click', async e=>{
   e.preventDefault();
   const id=btn.dataset.id, cur=Number(btn.dataset.public)||0, nxt=cur?0:1;
   btn.disabled=true;
-  const res=await fetch('toggle_visibility.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({id,is_public:nxt})});
+  const res=await fetch('toggle_visibility.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({id,is_public:nxt,csrf:<?= json_encode($csrf) ?>})});
   const d=await res.json();
   if(d?.ok){
     btn.dataset.public=String(nxt);
@@ -392,31 +392,3 @@ document.addEventListener('click',e=>{const a=e.target.closest('a.open-viewer');
 </script>
 </body>
 </html>
-
-<?php
-/* ============================================================
-   OLD CODE (v1) — ก่อนเพิ่ม Tab บันทึกไว้ และ Tab สถิติ
-   ไม่ได้ใช้งานแล้ว เก็บไว้เพื่อดูความเปลี่ยนแปลง
-   ============================================================
-
-   v1 มีเพียง Tab เดียวคือ "โมเดลของฉัน"
-   แสดงรายการโมเดลในตาราง พร้อมปุ่ม แก้ไข / toggle public / ลบ
-
-   SQL เดิม (v1):
-   SELECT m.id, m.title, m.filename, m.description, m.created_at,
-          EXISTS(...) AS is_collected,
-          COALESCE(m.is_public, 1) AS is_public
-   FROM models m
-   WHERE m.user_id = :uid1
-   ORDER BY m.created_at DESC
-
-   สิ่งที่เพิ่มใน v2:
-   - Query Tab 2: JOIN collections เพื่อดึงโมเดลที่บันทึกไว้
-   - Query Tab 3: view_count, like_count, comment_count per model
-   - Summary stats: totalViews, totalLikes, totalComments
-   - Tab navigation JS
-   - ปุ่ม js-unsave สำหรับลบออกจาก saved
-   - แสดง License ในตาราง
-   - ลิงก์ model.php?id=X แทน open-viewer modal
-============================================================ */
-?>

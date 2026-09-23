@@ -66,7 +66,7 @@ try {
             ];
             foreach ($files as $f) {
                 if ($f) {
-                    $path = dirname(__DIR__, 2) . '/public/uploads/' . $f;
+                    $path = dirname(__DIR__, 2) . '/frontend/uploads/' . $f;
                     if (file_exists($path)) {
                         @unlink($path);
                     }
@@ -95,18 +95,24 @@ try {
         $m = $st->fetch();
 
         if ($m) {
+            $pdo->beginTransaction();
+            $pdo->prepare("DELETE FROM likes WHERE model_id = ?")->execute([$id]);
+            $pdo->prepare("DELETE FROM collections WHERE model_id = ?")->execute([$id]);
+            $pdo->prepare("DELETE FROM comments WHERE model_id = ?")->execute([$id]);
+            $pdo->prepare("DELETE FROM models WHERE id = ?")->execute([$id]);
+            $pdo->commit();
+
             $files = [
                 $m['filename'], $m['file_gltf'], $m['file_glb'], $m['file_usdz'], $m['file_obj'], $m['thumb']
             ];
             foreach ($files as $f) {
                 if ($f) {
-                    $path = __DIR__ . '/uploads/' . $f;
+                    $path = dirname(__DIR__, 2) . '/frontend/uploads/' . $f;
                     if (file_exists($path)) {
                         @unlink($path);
                     }
                 }
             }
-            $pdo->prepare("DELETE FROM models WHERE id = ?")->execute([$id]);
             echo json_encode(['ok' => true, 'message' => 'ลบโมเดลสำเร็จ']);
         } else {
             echo json_encode(['ok' => false, 'message' => 'ไม่พบโมเดลนี้']);

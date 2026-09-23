@@ -4,16 +4,29 @@ const DISPLAY_DATETIME_FORMAT = 'd/m/Y H:i';
  * creator_earnings.php — Creator Earnings & Payout Dashboard
  */
 require_once 'connect.php';
+require_once __DIR__ . '/../backend/services/Security.php';
+
+use App\Services\Security;
+
 $uid = (int)($_SESSION['uid'] ?? 0);
 if (!$uid) {
     header('Location: login.php');
     exit;
 }
 
+if (empty($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(16));
+}
+$csrf = $_SESSION['csrf'];
+
 $uname = htmlspecialchars($_SESSION['uname'] ?? '', ENT_QUOTES);
 
 // ── Handle bank account save ──────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_bank') {
+    if (!Security::isValidCsrfToken($_POST['csrf'] ?? null, $_SESSION['csrf'] ?? null)) {
+        http_response_code(403);
+        exit('Invalid CSRF token');
+    }
     $bankName    = trim($_POST['bank_name'] ?? '');
     $bankAccNo   = trim($_POST['bank_account_no'] ?? '');
     $bankAccName = trim($_POST['bank_account_name'] ?? '');
@@ -407,6 +420,7 @@ $saved = isset($_GET['saved']);
         </p>
         <form method="POST" action="creator_earnings.php">
           <input type="hidden" name="action" value="save_bank">
+          <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
           <label class="form-label-c" for="bank_name">ธนาคาร</label>
           <input type="text" id="bank_name" name="bank_name" class="form-input-c"
                  placeholder="เช่น กสิกรไทย, กรุงไทย, SCB"

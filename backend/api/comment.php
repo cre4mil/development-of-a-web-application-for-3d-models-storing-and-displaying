@@ -1,5 +1,9 @@
 <?php
 require_once dirname(__DIR__) . '/config/database.php';
+require_once dirname(__DIR__) . '/services/Security.php';
+
+use App\Services\Security;
+
 header('Content-Type: application/json; charset=utf-8');
 
 $uid = (int)($_SESSION['uid'] ?? 0);
@@ -21,6 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['error'=>'method']); exit; }
 if (!$uid) { http_response_code(401); echo json_encode(['error'=>'not_login']); exit; }
+if (!Security::isValidCsrfToken($_POST['csrf'] ?? null, $_SESSION['csrf'] ?? null)) {
+    http_response_code(403); echo json_encode(['error'=>'bad_csrf']); exit;
+}
 
 $action = $_POST['action'] ?? 'add';
 
