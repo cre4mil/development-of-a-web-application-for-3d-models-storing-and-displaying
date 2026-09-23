@@ -9,6 +9,7 @@ if (empty($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(16));
 }
 
+// Check if user is admin
 if (empty($_SESSION['uid']) || empty($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
     header('Location: index.php');
     exit;
@@ -47,10 +48,10 @@ $orders = $pdo->query("
   <title>Admin Dashboard - 3D Gallery</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css?v=<?= filemtime('style.css') ?>">
+  <link rel="stylesheet" href="style.css?v=<?= file_exists(__DIR__ . '/style.css') ? filemtime(__DIR__ . '/style.css') : time() ?>">
   <style>
     body { background-color: #f8f9fa; color: #212529; }
-    
+
     .stat-card {
       background: #fff;
       border: 1px solid #eaeaea;
@@ -79,7 +80,7 @@ $orders = $pdo->query("
       margin: 0;
       font-size: 0.85rem;
     }
-    
+
     .nav-tabs {
       border-bottom: 1px solid #eaeaea;
       margin-bottom: 1.5rem;
@@ -98,7 +99,7 @@ $orders = $pdo->query("
     .nav-tabs .nav-link:hover:not(.active) {
       color: #666;
     }
-    
+
     .card {
       background: #fff;
       border-radius: 12px;
@@ -162,7 +163,7 @@ $orders = $pdo->query("
 </div>
 
 <div class="container mb-5">
-  
+
   <!-- Stats Row -->
   <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4">
     <div class="col">
@@ -234,7 +235,7 @@ $orders = $pdo->query("
   </ul>
 
   <div class="tab-content" id="adminTabsContent">
-    
+
     <!-- Orders Tab -->
     <div class="tab-pane fade show active" id="orders" role="tabpanel" tabindex="0">
       <div class="card border-0">
@@ -399,7 +400,7 @@ $orders = $pdo->query("
 <script>
   const csrf = '<?= $_SESSION['csrf'] ?>';
   const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
-  
+
   document.querySelectorAll('.btn-action').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const action = btn.dataset.action;

@@ -1,6 +1,10 @@
 # Uploaded files (user content)
 uploads/*
 !uploads/.gitkeep
+frontend/uploads/*
+!frontend/uploads/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
 
 # OS files
 Thumbs.db

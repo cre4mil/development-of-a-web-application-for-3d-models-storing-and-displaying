@@ -1,0 +1,19 @@
+DirectoryIndex frontend/index.php
+
+RewriteEngine On
+
+# 1. Allow already rewritten or direct requests to frontend or public without looping
+RewriteRule ^(?:frontend|public)(?:/|$) - [L]
+
+# 2. Block direct access to sensitive directories and configuration files
+RewriteRule ^(?:\.env|\.git|backend|tests|docs|vendor|coverage-html)(?:/|$) - [F,L]
+
+# 3. Route root request directly to frontend/index.php
+RewriteRule ^$ frontend/index.php [L]
+
+# 4. Route uploads to frontend/uploads/
+RewriteRule ^uploads/(.*)$ frontend/uploads/$1 [L]
+
+# 5. Route all other requests to frontend/
+RewriteRule ^(.*)$ frontend/$1 [L]
+

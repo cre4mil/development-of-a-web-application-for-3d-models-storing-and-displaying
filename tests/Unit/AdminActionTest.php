@@ -27,6 +27,7 @@ class AdminActionTest extends TestCase
             $this->isCsrfValid($postCsrf, $sessionCsrf),
             "Matching CSRF tokens should pass validation"
         );
+
     }
 
     #[Test]
@@ -199,7 +200,7 @@ class AdminActionTest extends TestCase
         $this->assertFalse($this->isAdmin($session));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testEmptySessionIsRejected(): void
     {
         $this->assertFalse($this->isAdmin([]));

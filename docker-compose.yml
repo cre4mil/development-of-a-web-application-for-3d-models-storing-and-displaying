@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  sonarqubedb:
+    image: postgres:16
+    container_name: sonarqubedb
+    environment:
+      POSTGRES_USER: sonarqube
+      POSTGRES_PASSWORD: sonarqube
+      POSTGRES_DB: sonarqube
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sonarqube -d sonarqube" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    profiles: [ "core" ]
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    depends_on:
+      sonarqubedb:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqubedb:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonarqube
+      SONAR_JDBC_PASSWORD: sonarqube
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    profiles: [ "core" ]
+
+  sonar-scanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    container_name: sonar-scanner
+    working_dir: /usr/src
+    volumes:
+      # จำเป็นต้อง Mount โฟลเดอร์ปัจจุบัน (./) เข้าไป เพื่อให้ Scanner เห็นไฟล์โค้ดของคุณ
+      - ./:/usr/src
+    environment:
+      # ชี้ไปที่ Container ของ SonarQube ที่รันอยู่
+      SONAR_HOST_URL: http://sonarqube:9000
+    command:
+      - sonar-scanner
+      - -Dsonar.projectKey=development-of-a-web-application
+      - -Dsonar.projectName=3D Models Web Application
+      - -Dsonar.sources=.
+      - -Dsonar.language=php
+      - -Dsonar.sourceEncoding=UTF-8
+      - -Dsonar.exclusions=vendor/**,**/uploads/**,coverage-html/**,**/*.py,**/*.css,composer.phar
+      - -Dsonar.coverage.exclusions=frontend/uploads.php,backend/api/login.php,backend/api/register.php
+      # ใส่ Token ของ Local Server ตรงนี้ (ตั้งค่าในไฟล์ .env)
+      - -Dsonar.token=${LOCAL_SONAR_TOKEN:-}
+    depends_on:
+      - sonarqube
+    profiles: [ "scanner" ]
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  postgresql_data:
