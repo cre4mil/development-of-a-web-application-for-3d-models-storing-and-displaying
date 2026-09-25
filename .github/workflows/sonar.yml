@@ -19,23 +19,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # ต้องใช้ fetch-depth: 0 เพื่อให้ SonarCloud วิเคราะห์ประวัติไฟล์ (Blame) ได้ถูกต้อง
+          # Full history lets SonarCloud attribute new code correctly (blame)
           fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          coverage: xdebug # เปิดใช้งาน xdebug เพื่อให้ทำ Code Coverage ได้
+          extensions: pdo_sqlite, curl, mbstring
+          coverage: xdebug
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run PHPUnit Tests
-        run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover coverage.xml --log-junit report.xml
+      # The suite uses an in-memory SQLite database, so no MySQL service is needed.
+      - name: Run PHPUnit with coverage
+        run: composer test-coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub มีให้อัตโนมัติอยู่แล้ว
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # ต้องไปตั้งค่าใน GitHub Secrets
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

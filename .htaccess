@@ -2,18 +2,15 @@ DirectoryIndex frontend/index.php
 
 RewriteEngine On
 
-# 1. Allow already rewritten or direct requests to frontend or public without looping
-RewriteRule ^(?:frontend|public)(?:/|$) - [L]
+# 1. Requests that already target frontend/ pass through without looping
+RewriteRule ^frontend(?:/|$) - [L]
 
-# 2. Block direct access to sensitive directories and configuration files
-RewriteRule ^(?:\.env|\.git|backend|tests|docs|vendor|coverage-html)(?:/|$) - [F,L]
+# 2. Never serve source, config, tests, docs or dependency folders
+RewriteRule ^(?:\.env|\.git|\.github|backend|database|tests|docs|tools|vendor|coverage-html)(?:/|$) - [F,L]
+RewriteRule ^(?:composer\.(?:json|lock|phar)|phpunit\.xml|sonar-project\.properties|docker-compose\.yml)$ - [F,L]
 
-# 3. Route root request directly to frontend/index.php
+# 3. Route the site root to the gallery
 RewriteRule ^$ frontend/index.php [L]
 
-# 4. Route uploads to frontend/uploads/
-RewriteRule ^uploads/(.*)$ frontend/uploads/$1 [L]
-
-# 5. Route all other requests to frontend/
+# 4. Everything else (pages, api/, assets/, uploads/) lives in frontend/
 RewriteRule ^(.*)$ frontend/$1 [L]
-

@@ -6,11 +6,12 @@ namespace App\Services;
 
 final class Security
 {
+    /** Formats the browser viewer can render directly. */
+    public const MODEL_EXTENSIONS = ['glb', 'gltf', 'obj', 'fbx', 'stl', 'ply', 'dae', '3ds'];
+
+    public const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+
     private const ALLOWED_EMAIL_DOMAINS = ['gmail.com', 'hotmail.com'];
-
-    private const MODEL_EXTENSIONS = ['obj', 'glb', 'gltf', 'fbx', 'blend', 'stl', 'usdz'];
-
-    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
     public static function isAllowedEmail(string $email): bool
     {
@@ -51,5 +52,13 @@ final class Security
             && basename($filename) === $filename
             && !str_contains($filename, "\0")
             && !str_contains($filename, '..');
+    }
+
+    /**
+     * Accepts only same-site page paths such as "model.php?id=3" to prevent open redirects.
+     */
+    public static function safeRedirect(string $target, string $default = 'index.php'): string
+    {
+        return preg_match('/^[A-Za-z0-9_\-]+\.php(\?[A-Za-z0-9_=&%.\-\[\]]*)?$/', $target) === 1 ? $target : $default;
     }
 }

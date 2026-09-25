@@ -16,6 +16,7 @@ final class SecurityTest extends TestCase
         self::assertSame($expected, Security::isAllowedEmail($email));
     }
 
+    /** @return array<string, array{string, bool}> */
     public static function allowedEmailProvider(): array
     {
         return [
@@ -40,6 +41,8 @@ final class SecurityTest extends TestCase
         self::assertFalse(Security::isValidCsrfToken('different', 'matching'));
         self::assertFalse(Security::isValidCsrfToken('', 'matching'));
         self::assertFalse(Security::isValidCsrfToken(null, 'matching'));
+        self::assertFalse(Security::isValidCsrfToken('matching', null));
+        self::assertFalse(Security::isValidCsrfToken('matching', ''));
     }
 
     #[DataProvider('uploadExtensionProvider')]
@@ -48,13 +51,17 @@ final class SecurityTest extends TestCase
         self::assertSame($expected, Security::isAllowedUploadExtension($filename, $kind));
     }
 
+    /** @return array<string, array{string, string, bool}> */
     public static function uploadExtensionProvider(): array
     {
         return [
             'glb model' => ['model.glb', 'model', true],
             'uppercase model' => ['model.OBJ', 'model', true],
+            'stl model' => ['part.stl', 'model', true],
             'php disguised as model' => ['shell.php', 'model', false],
+            'blend is not viewable' => ['scene.blend', 'model', false],
             'jpg thumbnail' => ['preview.jpg', 'image', true],
+            'webp thumbnail' => ['preview.webp', 'image', true],
             'svg thumbnail is rejected' => ['payload.svg', 'image', false],
         ];
     }
@@ -65,6 +72,7 @@ final class SecurityTest extends TestCase
         self::assertSame($expected, Security::isSafeStoredFilename($filename));
     }
 
+    /** @return array<string, array{string, bool}> */
     public static function storedFilenameProvider(): array
     {
         return [
@@ -73,5 +81,30 @@ final class SecurityTest extends TestCase
             'traversal' => ['../secrets.txt', false],
             'empty string' => ['', false],
         ];
+    }
+
+    #[DataProvider('redirectProvider')]
+    public function testRedirectTargetsMustBeLocalPages(string $target, string $expected): void
+    {
+        self::assertSame($expected, Security::safeRedirect($target));
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function redirectProvider(): array
+    {
+        return [
+            'plain page' => ['profile.php', 'profile.php'],
+            'page with query' => ['model.php?id=3&tab=a%20b', 'model.php?id=3&tab=a%20b'],
+            'external URL' => ['https://evil.example/x.php', 'index.php'],
+            'protocol relative' => ['//evil.example/x.php', 'index.php'],
+            'traversal' => ['../admin.php', 'index.php'],
+            'script injection' => ['index.php?x=<script>', 'index.php'],
+            'empty' => ['', 'index.php'],
+        ];
+    }
+
+    public function testRedirectDefaultCanBeChanged(): void
+    {
+        self::assertSame('home.php', Security::safeRedirect('http://x', 'home.php'));
     }
 }

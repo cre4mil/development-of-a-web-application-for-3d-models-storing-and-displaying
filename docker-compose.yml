@@ -1,4 +1,11 @@
-version: '3.8'
+# Local SonarQube (Community) + scanner.
+#
+#   docker compose --profile core up -d          # start SonarQube on http://localhost:9000
+#   composer test-coverage                       # PHPUnit + coverage.xml with project-relative paths
+#   docker compose --profile scanner run --rm sonar-scanner
+#
+# Put your project token in .env as LOCAL_SONAR_TOKEN (see .env.example).
+# Analysis settings (sources, exclusions, coverage report) live in sonar-project.properties.
 
 services:
   sonarqubedb:
@@ -40,21 +47,14 @@ services:
     container_name: sonar-scanner
     working_dir: /usr/src
     volumes:
-      # จำเป็นต้อง Mount โฟลเดอร์ปัจจุบัน (./) เข้าไป เพื่อให้ Scanner เห็นไฟล์โค้ดของคุณ
+      # The project is mounted so the scanner sees the code and coverage.xml
       - ./:/usr/src
     environment:
-      # ชี้ไปที่ Container ของ SonarQube ที่รันอยู่
       SONAR_HOST_URL: http://sonarqube:9000
     command:
       - sonar-scanner
       - -Dsonar.projectKey=development-of-a-web-application
       - -Dsonar.projectName=3D Models Web Application
-      - -Dsonar.sources=.
-      - -Dsonar.language=php
-      - -Dsonar.sourceEncoding=UTF-8
-      - -Dsonar.exclusions=vendor/**,**/uploads/**,coverage-html/**,**/*.py,**/*.css,composer.phar
-      - -Dsonar.coverage.exclusions=frontend/uploads.php,backend/api/login.php,backend/api/register.php
-      # ใส่ Token ของ Local Server ตรงนี้ (ตั้งค่าในไฟล์ .env)
       - -Dsonar.token=${LOCAL_SONAR_TOKEN:-}
     depends_on:
       - sonarqube
