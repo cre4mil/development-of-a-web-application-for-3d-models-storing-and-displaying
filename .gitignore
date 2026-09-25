@@ -1,14 +1,19 @@
+# Secrets — copy .env.example to .env locally, never commit it
+.env
+
 # Uploaded files (user content)
-uploads/*
-!uploads/.gitkeep
+frontend/uploads/*
+!frontend/uploads/.gitkeep
+!frontend/uploads/.htaccess
 
 # OS files
 Thumbs.db
 .DS_Store
 
-# IDE
+# IDE / tooling
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 
@@ -19,10 +24,13 @@ Thumbs.db
 /vendor/
 composer.phar
 
-# PHPUnit coverage reports
+# PHPUnit output
 coverage.xml
 report.xml
 /coverage-html/
+.phpunit.cache/
+.phpunit.result.cache
 
-# SonarQube cache
+# SonarQube scanner cache
 .sonar/
+.scannerwork/

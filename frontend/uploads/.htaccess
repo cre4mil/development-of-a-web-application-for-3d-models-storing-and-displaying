@@ -1,0 +1,8 @@
+# User uploads are data, never code: no directory listing, no script execution.
+Options -Indexes
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<FilesMatch "\.(php|phtml|phar)$">
+    Require all denied
+</FilesMatch>

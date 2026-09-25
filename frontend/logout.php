@@ -1,0 +1,4 @@
+<?php
+
+require_once __DIR__ . '/../backend/bootstrap.php';
+App\Http\Kernel::run(App\Controllers\AuthController::class, 'logout');

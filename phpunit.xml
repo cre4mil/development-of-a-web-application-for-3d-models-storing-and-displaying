@@ -3,40 +3,37 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-         stopOnFailure="false">
+         cacheDirectory=".phpunit.cache"
+         failOnRisky="true"
+         failOnWarning="true">
 
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory>tests/Unit</directory>
+        <testsuite name="Application">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
-    <!-- Code Coverage -->
+    <!-- Every PHP file that ships with the application is measured, templates included. -->
+    <source>
+        <include>
+            <directory suffix=".php">backend</directory>
+            <directory suffix=".php">frontend</directory>
+        </include>
+        <exclude>
+            <directory>frontend/uploads</directory>
+        </exclude>
+    </source>
+
     <coverage>
         <report>
             <clover outputFile="coverage.xml"/>
             <html outputDirectory="coverage-html"/>
-            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
         </report>
     </coverage>
 
-    <!-- Source files to analyze for coverage -->
-    <source>
-        <include>
-            <directory suffix=".php">.</directory>
-        </include>
-        <exclude>
-            <directory>vendor</directory>
-            <directory>tests</directory>
-            <directory>uploads</directory>
-            <file>convert.py</file>
-        </exclude>
-    </source>
-
-    <!-- PHP settings -->
     <php>
         <ini name="error_reporting" value="-1"/>
         <ini name="display_errors" value="On"/>
     </php>
-
 </phpunit>
