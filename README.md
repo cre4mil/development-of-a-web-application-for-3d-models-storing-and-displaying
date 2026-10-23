@@ -1,54 +1,74 @@
-# 3D Gallery — 3D model storage and viewer
+# 3D Gallery — เว็บแอปพลิเคชันสำหรับจัดเก็บและแสดงผลโมเดล 3 มิติ
 
-A Sketchfab-style web application: upload 3D models, browse them in a searchable gallery, inspect them
-in the browser (orbit, wireframe, material channels, VR/fullscreen), like / save / comment / follow,
-sell models with PromptPay slip verification, and pay creators out.
+**ผู้จัดทำ:** Panisara Kunkam (66160026) · ITDI – Informatics, Burapha University
 
-PHP 8.1+ · MySQL/MariaDB · Bootstrap 5 · Three.js · PHPUnit · SonarQube
+## 1. ที่มาและความสำคัญ
 
-## Run locally (XAMPP)
+ไฟล์โมเดล 3 มิติมักถูกเก็บกระจายในเครื่องหรือโฟลเดอร์แชร์ทั่วไป การจะดูชิ้นงานต้องดาวน์โหลดแล้วเปิดด้วยโปรแกรมเฉพาะ
+ผู้สร้างผลงานจึงแสดงและขายโมเดลให้ผู้อื่นได้ยาก โครงงานนี้พัฒนาเว็บแอปพลิเคชันในลักษณะเดียวกับ Sketchfab
+เพื่อให้อัปโหลด จัดเก็บ ค้นหา และหมุนดูโมเดล 3 มิติบนเบราว์เซอร์ได้ทันที พร้อมระบบซื้อขายโมเดลระหว่างผู้ใช้
 
-1. Copy the project to `htdocs`, start Apache and MySQL.
-2. Create the database and tables:
+## 2. วัตถุประสงค์
+
+1. จัดเก็บโมเดล 3 มิติพร้อมข้อมูลประกอบ (ชื่อ คำอธิบาย แท็ก ไลเซนส์ ราคา) อย่างเป็นระบบ
+2. แสดงโมเดล 3 มิติบนเว็บเบราว์เซอร์ได้โดยไม่ต้องติดตั้งโปรแกรม
+3. ให้ผู้ใช้ค้นหาและมีปฏิสัมพันธ์กับผลงาน (ถูกใจ บันทึก คอมเมนต์ ติดตาม)
+4. ให้ผู้สร้างขายโมเดลได้ และให้ผู้ดูแลระบบตรวจสอบการชำระเงินและจ่ายรายได้ให้ผู้สร้าง
+
+## 3. ขอบเขตของระบบ
+
+| ผู้ใช้ | สิ่งที่ทำได้ |
+|---|---|
+| **ผู้เยี่ยมชม** | ค้นหา/กรอง/เรียงโมเดล, หมุนดูโมเดล 3 มิติ, ดาวน์โหลดโมเดลฟรี, สมัครสมาชิก |
+| **สมาชิก** | อัปโหลด/แก้ไข/ซ่อน/ลบโมเดลของตัวเอง, ถูกใจ, บันทึก, คอมเมนต์, ติดตามผู้สร้าง, ซื้อโมเดลด้วยการแนบสลิป, ดูรายได้และตั้งบัญชีรับเงิน |
+| **ผู้ดูแลระบบ** | ดูสถิติภาพรวม, อนุมัติ/ปฏิเสธคำสั่งซื้อ, จ่ายเงินให้ผู้สร้าง (แนบสลิปโอน), ตั้งค่าธรรมเนียมแพลตฟอร์ม, ลบผู้ใช้หรือโมเดลที่ไม่เหมาะสม |
+
+- ไฟล์โมเดลที่รองรับ: `glb, gltf, obj, fbx, stl, ply, dae, 3ds` และรูปปก `jpg, png, webp`
+- ถ้าตั้งค่า Blender ไว้ ระบบจะแปลงไฟล์เป็น glTF / GLB / OBJ / USDZ ให้ดาวน์โหลดได้หลายรูปแบบ
+- ตัวดูโมเดลมีโหมดหมุนอัตโนมัติ, wireframe, ดูช่องวัสดุ (เช่น base color, normal map), เต็มจอ และฝังลงเว็บอื่นด้วย iframe
+
+## 4. ขั้นตอนการทำงานโดยรวม
+
+1. **อัปโหลด:** สมาชิกเลือกไฟล์โมเดล → ระบบสร้างรูปปกจากโมเดลให้อัตโนมัติ → บันทึกไฟล์และข้อมูลลงฐานข้อมูล
+2. **ค้นหาและดู:** ผู้ใช้ค้นหาในหน้าแรก → เปิดหน้าโมเดลเพื่อหมุนดู ถูกใจ คอมเมนต์ หรือดาวน์โหลด
+3. **ซื้อโมเดล:** ผู้ซื้อสแกน QR พร้อมเพย์ → แนบสลิป → ระบบตรวจสลิปผ่าน SlipOK (ถ้าตั้งค่าไว้) หรือรอผู้ดูแลอนุมัติ → ดาวน์โหลดได้
+4. **แบ่งรายได้:** ยอดขายหักค่าธรรมเนียมแพลตฟอร์ม (ค่าเริ่มต้น 10%) แล้วเข้ากระเป๋าเงินผู้สร้าง → เมื่อยอดถึง 300 บาท ผู้ดูแลโอนเงินและแนบสลิป
+
+## 5. เทคโนโลยีที่ใช้
+
+| ส่วน | เทคโนโลยี |
+|---|---|
+| Frontend | HTML, Bootstrap 5, JavaScript, Three.js |
+| Backend | PHP 8.1+ |
+| ฐานข้อมูล | MySQL / MariaDB |
+| เสริม | Blender (แปลงไฟล์), SlipOK API (ตรวจสลิป), PromptPay QR |
+| ทดสอบคุณภาพ | PHPUnit, SonarQube / SonarCloud |
+
+## 6. โครงสร้างโปรเจกต์
+
+```
+frontend/   หน้าเว็บที่ผู้ใช้เปิด (*.php), API (api/), template, CSS/JS และไฟล์อัปโหลด (uploads/)
+backend/    ตรรกะของระบบ: controllers, services, repositories และสคริปต์แปลงไฟล์ด้วย Blender
+database/   schema.sql สำหรับสร้างตาราง
+tests/      ชุดทดสอบ PHPUnit
+```
+
+## 7. การติดตั้งและใช้งาน (XAMPP)
+
+1. คัดลอกโปรเจกต์ไว้ใน `htdocs` แล้วเปิด Apache และ MySQL
+2. สร้างฐานข้อมูล
    ```bash
    mysql -u root -e "CREATE DATABASE db_3dmodels CHARACTER SET utf8mb4"
    mysql -u root db_3dmodels < database/schema.sql
    ```
-   Existing installs only need the files in `database/migrations/` they have not applied yet.
-3. `cp .env.example .env` and adjust DB credentials, payment account and (optionally) `BLENDER_PATH`.
-4. Open `http://localhost/<project-folder>/`.
+3. คัดลอก `.env.example` เป็น `.env` แล้วใส่ข้อมูลฐานข้อมูล บัญชีรับเงิน และ `BLENDER_PATH` (ไม่ใส่ก็ได้)
+4. เปิด `http://localhost/<ชื่อโฟลเดอร์โปรเจกต์>/`
+5. สมัครสมาชิก (ใช้อีเมล @gmail.com หรือ @hotmail.com) หากต้องการบัญชีผู้ดูแล ให้ตั้งค่า `is_admin = 1` ในตาราง `users`
 
-`composer install` is optional for running the site (a built-in autoloader is used) but required for tests.
-
-## Tests and coverage
+## 8. การทดสอบ
 
 ```bash
-composer test            # fast run
-composer test-coverage   # PHPUnit + coverage.xml (project-relative paths for Sonar)
+composer install
+composer test            # รันชุดทดสอบ (ใช้ SQLite ในหน่วยความจำ ไม่ต้องเปิด MySQL)
+composer test-coverage   # รันพร้อมวัด coverage สำหรับ SonarQube
 ```
-
-The suite uses an in-memory SQLite database, so it needs no MySQL server. All PHP under `backend/` and
-`frontend/` — controllers, repositories, services, templates and entry scripts — is covered.
-
-### SonarQube
-
-```bash
-docker compose --profile core up -d                                   # SonarQube on :9000
-composer test-coverage
-docker compose --profile core --profile scanner run --rm --no-deps sonar-scanner
-```
-
-`LOCAL_SONAR_TOKEN` comes from `.env`. Browser scripts in `frontend/assets/` are excluded from the
-coverage figure (they are not PHP); everything else is measured. CI runs the same steps against
-SonarCloud (`.github/workflows/sonar.yml`).
-
-## Project layout
-
-## Security notes
-
-* `.env` is git-ignored; never commit tokens. Rotate any token that was committed in the past.
-* State-changing endpoints require a POST, a session and a CSRF token.
-* Uploaded files are stored under `frontend/uploads/`, where scripts are never executed
-  (`.htaccess`). Payment slips are stored there too — keep the directory listing disabled.
-* Paid models can be *viewed* by anyone (the browser needs the file to render it); only downloads are
-  gated by purchase.
