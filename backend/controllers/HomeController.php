@@ -46,7 +46,7 @@ final class HomeController extends Controller
         $userId = $request->session()->userId();
 
         return View::page($request, 'pages/home', [
-            'title' => '3D Gallery — คลังโมเดล 3 มิติ',
+            'title' => 'Development of a Web Application for 3D Models Storing and Management Version 2',
             'nav' => 'home',
             'scripts' => ['viewer.js', 'gallery.js'],
             'filters' => $filters,
