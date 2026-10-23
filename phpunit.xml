@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnRisky="true"
+         failOnWarning="true">
+
+    <testsuites>
+        <testsuite name="Application">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Every PHP file that ships with the application is measured, templates included. -->
+    <source>
+        <include>
+            <directory suffix=".php">backend</directory>
+            <directory suffix=".php">frontend</directory>
+        </include>
+        <exclude>
+            <directory>frontend/uploads</directory>
+        </exclude>
+    </source>
+
+    <coverage>
+        <report>
+            <clover outputFile="coverage.xml"/>
+            <html outputDirectory="coverage-html"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
+        </report>
+    </coverage>
+
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="display_errors" value="On"/>
+    </php>
+</phpunit>

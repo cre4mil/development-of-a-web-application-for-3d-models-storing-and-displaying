@@ -1,0 +1,16 @@
+DirectoryIndex frontend/index.php
+
+RewriteEngine On
+
+# 1. Requests that already target frontend/ pass through without looping
+RewriteRule ^frontend(?:/|$) - [L]
+
+# 2. Never serve source, config, tests, docs or dependency folders
+RewriteRule ^(?:\.env|\.git|\.github|backend|database|tests|docs|tools|vendor|coverage-html)(?:/|$) - [F,L]
+RewriteRule ^(?:composer\.(?:json|lock|phar)|phpunit\.xml|sonar-project\.properties|docker-compose\.yml)$ - [F,L]
+
+# 3. Route the site root to the gallery
+RewriteRule ^$ frontend/index.php [L]
+
+# 4. Everything else (pages, api/, assets/, uploads/) lives in frontend/
+RewriteRule ^(.*)$ frontend/$1 [L]
