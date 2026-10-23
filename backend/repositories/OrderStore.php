@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+// สัญญา (interface) ของที่เก็บข้อมูลออเดอร์ ที่ OrderService ใช้ — ตัวจริงคือ PdoOrderRepository
 interface OrderStore
 {
     /** @param list<int> $modelIds @return list<array<string, mixed>> */

@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repositories\CatalogRepository;
 
+// ลบโมเดล: ข้อมูลใน DB และไฟล์ทั้งหมดใน uploads/
 /** Deletes a model, its database rows and every file on disk. */
 final class ModelRemover
 {
@@ -13,6 +14,7 @@ final class ModelRemover
     {
     }
 
+    // ลบได้เฉพาะโมเดลที่ยังไม่เคยขาย คืน false ถ้าลบไม่ได้
     /**
      * @param array<string, mixed> $model
      * @return bool false when the model has sales history and must be kept (hide it instead)

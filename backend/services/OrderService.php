@@ -6,12 +6,14 @@ namespace App\Services;
 
 use App\Repositories\OrderStore;
 
+// ขั้นตอนการสั่งซื้อและอนุมัติออเดอร์
 final class OrderService
 {
     public function __construct(private readonly OrderStore $store)
     {
     }
 
+    // สร้างออเดอร์ใหม่ ถ้าสลิปผ่านอัตโนมัติ (approved) จะเพิ่มเงินเข้ากระเป๋าครีเอเตอร์ทันที
     /** @param list<int> $modelIds @return array{order_ref: string, items: int, total: float}|null */
     public function create(int $buyerId, array $modelIds, string $slipUrl, string $status, ?string $note, float $defaultFeePercent): ?array
     {
@@ -32,6 +34,7 @@ final class OrderService
         return ['order_ref' => $reference, 'items' => count($items), 'total' => $total];
     }
 
+    // คำนวณรายการที่ซื้อได้และยอดรวม (ข้ามโมเดลของตัวเองและที่ซื้อแล้ว)
     /** @param list<int> $modelIds @return array{items: list<array<string, int|float>>, total: float}|null */
     public function quote(int $buyerId, array $modelIds, float $defaultFeePercent): ?array
     {
@@ -49,6 +52,7 @@ final class OrderService
         return $items === [] ? null : ['items' => $items, 'total' => round(array_sum(array_column($items, 'price')), 2)];
     }
 
+    // แอดมินอนุมัติ/ปฏิเสธออเดอร์ ถ้าอนุมัติจะเพิ่มเงินเข้ากระเป๋าครีเอเตอร์
     public function process(int $adminId, int $orderId, string $status, string $note): string
     {
         $result = 'ok';
@@ -73,6 +77,7 @@ final class OrderService
         return $result;
     }
 
+    // เพิ่มรายได้ของออเดอร์เข้ากระเป๋าครีเอเตอร์แต่ละคน
     private function creditEarnings(int $orderId): void
     {
         foreach ($this->store->earningsForOrder($orderId) as $earning) {

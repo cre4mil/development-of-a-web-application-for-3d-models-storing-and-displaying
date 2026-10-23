@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use PDO;
 
+// อ่าน/เขียนข้อมูลไลก์ คอลเลกชัน การติดตาม และคอมเมนต์ ในฐานข้อมูล
 /** Likes, saved collections, follows and comments. */
 final class SocialRepository
 {
@@ -13,18 +14,21 @@ final class SocialRepository
     {
     }
 
+    // กด/ยกเลิกถูกใจ แล้วคืนสถานะใหม่
     /** Flips a like and returns the new state. */
     public function toggleLike(int $userId, int $modelId): bool
     {
         return $this->toggle('likes', $userId, $modelId);
     }
 
+    // บันทึก/ยกเลิกบันทึกโมเดล แล้วคืนสถานะใหม่
     /** Flips a saved-model entry and returns the new state. */
     public function toggleCollection(int $userId, int $modelId): bool
     {
         return $this->toggle('collections', $userId, $modelId);
     }
 
+    // จำนวนไลก์ของโมเดล
     public function likeCount(int $modelId): int
     {
         $statement = $this->pdo->prepare('SELECT COUNT(*) FROM likes WHERE model_id = ?');
@@ -33,6 +37,7 @@ final class SocialRepository
         return (int) $statement->fetchColumn();
     }
 
+    // เช็กว่าผู้ใช้ถูกใจ/บันทึกโมเดลนี้หรือยัง
     public function isLiked(int $userId, int $modelId): bool
     {
         return $this->exists('likes', $userId, $modelId);
@@ -43,6 +48,7 @@ final class SocialRepository
         return $this->exists('collections', $userId, $modelId);
     }
 
+    // id โมเดลที่ผู้ใช้ถูกใจ/บันทึก
     /** @return list<int> */
     public function likedIds(int $userId): array
     {
@@ -55,6 +61,7 @@ final class SocialRepository
         return $this->ids('collections', $userId);
     }
 
+    // ติดตาม/เลิกติดตาม แล้วคืนสถานะใหม่
     /** Flips a follow and returns the new state. */
     public function toggleFollow(int $followerId, int $followeeId): bool
     {
@@ -68,6 +75,7 @@ final class SocialRepository
         return !$following;
     }
 
+    // เช็กการติดตาม และนับผู้ติดตาม
     public function isFollowing(int $followerId, int $followeeId): bool
     {
         $statement = $this->pdo->prepare('SELECT 1 FROM follows WHERE follower_id = ? AND followee_id = ?');
@@ -84,6 +92,7 @@ final class SocialRepository
         return (int) $statement->fetchColumn();
     }
 
+    // คอมเมนต์ทั้งหมดของโมเดล พร้อมชื่อผู้เขียน
     /** @return list<array<string, mixed>> */
     public function comments(int $modelId): array
     {
@@ -94,6 +103,7 @@ final class SocialRepository
         return $statement->fetchAll();
     }
 
+    // เพิ่มคอมเมนต์แล้วคืนคอมเมนต์ที่บันทึก
     /** @return array<string, mixed> the stored comment with its author */
     public function addComment(int $modelId, int $userId, string $body): array
     {
@@ -105,6 +115,7 @@ final class SocialRepository
         return $statement->fetch();
     }
 
+    // ลบคอมเมนต์ (ของตัวเอง หรือทุกคนถ้าเป็นแอดมิน)
     /** Deletes a comment written by $userId (or any comment when $anyAuthor); returns whether a row was removed. */
     public function deleteComment(int $commentId, int $userId, bool $anyAuthor): bool
     {
@@ -116,6 +127,7 @@ final class SocialRepository
         return $statement->rowCount() > 0;
     }
 
+    // ตัวช่วย: สลับเพิ่ม/ลบแถว, เช็กว่ามีแถว, ดึง id โมเดล ของตาราง likes/collections
     private function toggle(string $table, int $userId, int $modelId): bool
     {
         $active = $this->exists($table, $userId, $modelId);

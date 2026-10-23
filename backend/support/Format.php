@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+// จัดรูปแบบข้อมูลสำหรับแสดงผล
 /** Display formatting shared by templates and controllers. */
 final class Format
 {
+    // ขนาดไฟล์ เช่น 2.5 MB
     public static function bytes(int|float $bytes): string
     {
         if ($bytes <= 0) {
@@ -18,6 +20,7 @@ final class Format
         return round($bytes / (1024 ** $power), 2) . ' ' . $units[$power];
     }
 
+    // ตัวเลขย่อ เช่น 1.3k, 2.4M
     /** 1250 -> "1.3k", 2_400_000 -> "2.4M". */
     public static function compact(int|float $number): string
     {
@@ -32,11 +35,13 @@ final class Format
         return (string) (int) $number;
     }
 
+    // จำนวนเงิน เช่น ฿1,250.00
     public static function money(int|float|string $amount): string
     {
         return '฿' . number_format((float) $amount, 2);
     }
 
+    // วันเวลา เช่น 23/10/2026 14:30
     public static function dateTime(?string $value): string
     {
         $time = $value === null || $value === '' ? false : strtotime($value);
@@ -44,6 +49,7 @@ final class Format
         return $time === false ? '-' : date('d/m/Y H:i', $time);
     }
 
+    // ตัวอักษรแรกของชื่อ (ใช้ทำรูปโปรไฟล์)
     public static function initial(string $name): string
     {
         return mb_strtoupper(mb_substr(trim($name), 0, 1, 'UTF-8'), 'UTF-8') ?: '?';

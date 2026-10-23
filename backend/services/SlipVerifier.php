@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// ตรวจสลิปโอนเงินกับ SlipOK API (ถ้าตั้งค่า SLIPOK_API_KEY ไว้)
 /** Verifies payment slips against the SlipOK API when an API key is configured. */
 final class SlipVerifier
 {
@@ -20,11 +21,13 @@ final class SlipVerifier
         $this->http = $http ?? [self::class, 'upload'];
     }
 
+    // ใช้ได้เมื่อมี API key (ถ้าไม่มี ออเดอร์จะรอแอดมินอนุมัติเอง)
     public function enabled(): bool
     {
         return $this->apiKey !== '';
     }
 
+    // ส่งสลิปไปตรวจ แล้วคืนสถานะ approved / pending / rejected
     /**
      * @return array{status: string, note: ?string} `approved` (auto-approve), `pending` (needs an admin) or `rejected` (fake/duplicate slip)
      */
@@ -40,6 +43,7 @@ final class SlipVerifier
             : $this->interpret($body, $expectedTotal);
     }
 
+    // อ่านผลจาก SlipOK แล้วเทียบยอดเงินกับยอดออเดอร์
     /** @return array{status: string, note: ?string} */
     private function interpret(string $body, float $expectedTotal): array
     {
@@ -54,6 +58,7 @@ final class SlipVerifier
         };
     }
 
+    // ส่งไฟล์สลิปไปที่ SlipOK ด้วย cURL
     /** Default transport: multipart upload with cURL. */
     public static function upload(string $url, string $slipPath, string $branchId): string|false
     {

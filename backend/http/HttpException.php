@@ -6,6 +6,7 @@ namespace App\Http;
 
 use RuntimeException;
 
+// error ที่ controller โยนเพื่อหยุด API แล้วตอบกลับเป็น JSON error
 /** Thrown by controllers to abort a JSON request with an error response. */
 final class HttpException extends RuntimeException
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http;
 
+// จัดการ session: อ่าน/เขียนค่า ข้อมูลผู้ใช้ที่ล็อกอิน และ CSRF token
 /** Thin wrapper around a session array (normally $_SESSION, held by reference). */
 final class Session
 {
@@ -12,6 +13,7 @@ final class Session
     {
     }
 
+    // อ่าน/เขียน/ลบค่าใน session
     public function get(string $key, mixed $default = null): mixed
     {
         return $this->data[$key] ?? $default;
@@ -41,6 +43,7 @@ final class Session
         return $value;
     }
 
+    // ข้อมูลผู้ใช้ที่ล็อกอินอยู่ (id, ชื่อ, เป็นแอดมินไหม)
     public function userId(): int
     {
         return (int) ($this->data['uid'] ?? 0);
@@ -56,6 +59,7 @@ final class Session
         return $this->userId() > 0 && (int) ($this->data['is_admin'] ?? 0) === 1;
     }
 
+    // บันทึกผู้ใช้ลง session หลังล็อกอินสำเร็จ
     public function login(int $id, string $username, bool $isAdmin): void
     {
         $this->data['uid'] = $id;
@@ -64,6 +68,7 @@ final class Session
         @session_regenerate_id(true);
     }
 
+    // ล้าง session ทั้งหมด (ออกจากระบบ)
     public function destroy(): void
     {
         $this->data = [];
@@ -72,6 +77,7 @@ final class Session
         @session_destroy();
     }
 
+    // สร้าง/อ่าน CSRF token ของ session นี้
     public function csrf(): string
     {
         if (empty($this->data['csrf'])) {
@@ -81,6 +87,7 @@ final class Session
         return (string) $this->data['csrf'];
     }
 
+    // ตรวจว่า CSRF token ที่ส่งมาตรงกับใน session
     public function isValidCsrf(?string $submitted): bool
     {
         $expected = (string) ($this->data['csrf'] ?? '');

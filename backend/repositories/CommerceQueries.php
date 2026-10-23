@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use PDO;
 
+// คำสั่ง SELECT เกี่ยวกับออเดอร์ ยอดขาย และรายได้ (อ่านอย่างเดียว)
 /** Read-side queries for orders, sales and earnings. */
 final class CommerceQueries
 {
@@ -13,6 +14,7 @@ final class CommerceQueries
     {
     }
 
+    // สถานะการซื้อโมเดลของผู้ซื้อ: approved / pending / null
     /** Latest relevant order state of a buyer for a model: 'approved', 'pending' or null. */
     public function purchaseState(int $buyerId, int $modelId): ?string
     {
@@ -27,6 +29,7 @@ final class CommerceQueries
         return in_array('pending', $states, true) ? 'pending' : null;
     }
 
+    // ออเดอร์ของผู้ซื้อพร้อมรายการสินค้า (หน้า orders.php)
     /** @return list<array<string, mixed>> orders placed by a buyer, each with its items */
     public function buyerOrders(int $buyerId): array
     {
@@ -36,6 +39,7 @@ final class CommerceQueries
         return $this->withItems($statement->fetchAll());
     }
 
+    // ออเดอร์ทั้งหมดสำหรับแอดมิน กรองตามสถานะได้
     /** @return list<array<string, mixed>> */
     public function adminOrders(string $status): array
     {
@@ -53,6 +57,7 @@ final class CommerceQueries
         return $this->withItems($statement->fetchAll());
     }
 
+    // นับออเดอร์แยกตามสถานะ
     /** @return array{pending: int, approved: int, rejected: int} */
     public function orderCounts(): array
     {
@@ -64,11 +69,13 @@ final class CommerceQueries
         return $counts;
     }
 
+    // รายได้รวมจากออเดอร์ที่อนุมัติแล้ว
     public function revenue(): float
     {
         return (float) $this->pdo->query("SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE payment_status = 'approved'")->fetchColumn();
     }
 
+    // ออเดอร์ล่าสุดสำหรับแดชบอร์ดแอดมิน
     /** @return list<array<string, mixed>> */
     public function dashboardOrders(): array
     {
@@ -78,6 +85,7 @@ final class CommerceQueries
             FROM orders o JOIN users b ON b.id = o.buyer_id ORDER BY o.created_at DESC, o.id DESC')->fetchAll();
     }
 
+    // ยอดขายของครีเอเตอร์
     /** @return list<array<string, mixed>> */
     public function sales(int $creatorId, int $limit): array
     {
@@ -90,6 +98,7 @@ final class CommerceQueries
         return $statement->fetchAll();
     }
 
+    // รายได้รายเดือนของครีเอเตอร์ (ใช้ทำกราฟ)
     /** @return list<array{month: string, earning: float, sales: int}> approved earnings for the last $months months */
     public function monthlyEarnings(int $creatorId, int $months): array
     {
@@ -108,6 +117,7 @@ final class CommerceQueries
         return array_values($byMonth);
     }
 
+    // จำนวนโมเดลที่ขายได้ของครีเอเตอร์
     public function soldModelCount(int $creatorId): int
     {
         $statement = $this->pdo->prepare('SELECT COUNT(DISTINCT model_id) FROM order_items WHERE creator_id = ?');
@@ -116,6 +126,7 @@ final class CommerceQueries
         return (int) $statement->fetchColumn();
     }
 
+    // ประวัติการรับเงินของครีเอเตอร์
     /** @return list<array<string, mixed>> */
     public function payoutHistory(int $creatorId): array
     {
@@ -126,6 +137,7 @@ final class CommerceQueries
         return $statement->fetchAll();
     }
 
+    // เติมรายการสินค้าให้แต่ละออเดอร์
     /**
      * @param list<array<string, mixed>> $orders
      * @return list<array<string, mixed>>

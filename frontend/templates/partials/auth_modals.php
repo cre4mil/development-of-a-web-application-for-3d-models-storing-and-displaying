@@ -1,4 +1,5 @@
 <?php
+// กล่องล็อกอิน (POST → login.php) และสมัครสมาชิก (POST → register.php)
 /** @var string $next page to return to after signing in */
 ?>
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginTitle" aria-hidden="true">

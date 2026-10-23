@@ -13,6 +13,7 @@ use App\Services\ModelFiles;
 use App\Support\Config;
 use PDO;
 
+// หน้าโปรไฟล์และหน้าโมเดลที่ถูกใจ (profile.php, like.php)
 /** The signed-in user's own pages: profile (models, saved, stats) and liked models. */
 final class ProfileController extends Controller
 {
@@ -28,6 +29,7 @@ final class ProfileController extends Controller
         $this->files = $files ?? new ModelFiles(Config::uploadDir());
     }
 
+    // หน้าโปรไฟล์: โมเดลของฉัน โมเดลที่บันทึก และสถิติรวม → templates/pages/profile.php
     public function index(Request $request): Response
     {
         if (($redirect = $this->pageGuard($request)) !== null) {
@@ -53,6 +55,7 @@ final class ProfileController extends Controller
         ]);
     }
 
+    // หน้าโมเดลที่ฉันกดถูกใจ → templates/pages/liked.php
     public function liked(Request $request): Response
     {
         if (($redirect = $this->pageGuard($request)) !== null) {

@@ -19,6 +19,7 @@ use App\Support\Config;
 use PDO;
 use Throwable;
 
+// หน้าคำสั่งซื้อของผู้ซื้อ และ API สั่งซื้อ/อนุมัติ/QR ชำระเงิน (เรียกจาก api/orders.php)
 /** Buyer orders page plus the checkout, approval and payment-QR endpoints. */
 final class OrderController extends Controller
 {
@@ -36,6 +37,7 @@ final class OrderController extends Controller
     private readonly OrderService $orders;
     private readonly SlipVerifier $verifier;
 
+    // เตรียม repository, ที่เก็บไฟล์, บริการออเดอร์ และตัวตรวจสลิป SlipOK
     public function __construct(PDO $pdo, ?ModelFiles $files = null, ?OrderService $orders = null, ?SlipVerifier $verifier = null)
     {
         parent::__construct($pdo);
@@ -46,6 +48,7 @@ final class OrderController extends Controller
         $this->verifier = $verifier ?? new SlipVerifier(Config::env('SLIPOK_API_KEY'), Config::env('SLIPOK_BRANCH_ID'));
     }
 
+    // หน้าคำสั่งซื้อของฉัน → templates/pages/orders.php
     public function index(Request $request): Response
     {
         return $this->pageGuard($request) ?? View::page($request, 'pages/orders', [
@@ -55,6 +58,7 @@ final class OrderController extends Controller
         ]);
     }
 
+    // API ข้อมูลชำระเงิน: QR พร้อมเพย์/TrueMoney หรือเลขบัญชีธนาคาร ส่งกลับไปแสดงในหน้าโมเดล
     /** Payment instructions (QR payload or bank details) for one model. */
     protected function qr(Request $request): Response
     {
@@ -72,6 +76,7 @@ final class OrderController extends Controller
         ] + ($isQr ? [] : ['account' => $account, 'name' => Config::paymentName()]));
     }
 
+    // API สั่งซื้อ: ตรวจสลิป บันทึกสลิปที่ uploads/slips/ แล้วสร้างออเดอร์ลง DB
     protected function create(Request $request): Response
     {
         $this->guard($request);
@@ -93,6 +98,7 @@ final class OrderController extends Controller
         ]);
     }
 
+    // API แอดมินอนุมัติหรือปฏิเสธออเดอร์
     /** Admin approves or rejects a pending order. */
     protected function status(Request $request): Response
     {
@@ -107,6 +113,7 @@ final class OrderController extends Controller
         return $this->ok(['status' => $status]);
     }
 
+    // ตรวจสลิปด้วย SlipOK แล้วสร้างออเดอร์ ถ้าไม่สำเร็จให้ลบไฟล์สลิปทิ้ง
     /**
      * Verifies the stored slip and creates the order; the slip file is removed when that fails.
      *

@@ -1,3 +1,4 @@
+// กล่องดูโมเดลแบบเร็วในแกลเลอรี (ใช้ viewer.js แสดง 3D)
 /**
  * Gallery quick-view: opens a model in a dialog straight from a card (no page load).
  * Requires core.js and viewer.js.
@@ -11,6 +12,7 @@
 
   let current = null;
 
+  // ใส่ข้อมูลโมเดลลงในกล่อง
   const fill = (data) => {
     element.dataset.current = data.id;
     $('#qvAvatar').textContent = (data.uploader || 'U').charAt(0).toUpperCase();
@@ -41,6 +43,7 @@
   };
 
   // The viewer needs a laid-out container, so it starts once the dialog is visible.
+  // เปิดกล่องแล้วโหลดโมเดล / ปิดกล่องแล้วล้างโมเดลออก
   element.addEventListener('shown.bs.modal', () => {
     const root = $('[data-viewer]', element);
     const viewer = root._viewer || new ModelViewer(root);

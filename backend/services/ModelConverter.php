@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// แปลงไฟล์โมเดลเป็น glTF/GLB/OBJ/USDZ ด้วย Blender (เรียก backend/scripts/convert.py)
 /**
  * Produces glTF / GLB / OBJ / USDZ copies of an uploaded model with Blender.
  *
@@ -27,11 +28,13 @@ final class ModelConverter
         $this->runner = $runner ?? 'shell_exec';
     }
 
+    // ใช้ได้เมื่อตั้งค่า BLENDER_PATH และมีไฟล์ Blender จริง
     public function enabled(): bool
     {
         return $this->blenderPath !== '' && is_file($this->blenderPath);
     }
 
+    // สั่ง Blender แปลงไฟล์ แล้วคืนชื่อไฟล์แต่ละฟอร์แมตที่แปลงสำเร็จ
     /**
      * @return array{gltf: ?string, glb: ?string, usdz: ?string, obj: ?string} file names by format
      */

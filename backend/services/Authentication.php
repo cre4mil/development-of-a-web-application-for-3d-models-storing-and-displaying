@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// ตรวจข้อมูลสมัครสมาชิกและตรวจรหัสผ่าน
 final class Authentication
 {
+    // ตรวจชื่อผู้ใช้ อีเมล รหัสผ่าน และยืนยันรหัสผ่าน คืนข้อความ error หรือ null ถ้าผ่าน
     public static function validateRegistration(string $username, string $email, string $password, string $confirmation): ?string
     {
         $error = null;
@@ -20,6 +22,7 @@ final class Authentication
         return $error;
     }
 
+    // เทียบรหัสผ่านกับค่าที่เก็บใน DB (รองรับทั้งแบบเข้ารหัสและข้อมูลเก่าที่ไม่ได้เข้ารหัส)
     public static function verifyPassword(string $password, string $storedHash): bool
     {
         if (Security::isPasswordHash($storedHash)) {

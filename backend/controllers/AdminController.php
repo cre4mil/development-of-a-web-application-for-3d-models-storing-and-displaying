@@ -19,6 +19,7 @@ use App\Services\PayoutService;
 use App\Support\Config;
 use PDO;
 
+// หน้าแอดมิน (แดชบอร์ด, ออเดอร์, จ่ายเงินครีเอเตอร์) และ API ของแอดมิน (เรียกจาก api/admin.php)
 /** Admin dashboard pages and moderation / payout actions. */
 final class AdminController extends Controller
 {
@@ -45,6 +46,7 @@ final class AdminController extends Controller
     private readonly ModelRemover $remover;
     private readonly PayoutService $payouts;
 
+    // เตรียม repository/service ที่ใช้ดึงข้อมูลผู้ใช้ โมเดล ออเดอร์ และการจ่ายเงิน
     public function __construct(PDO $pdo, ?ModelFiles $files = null, ?PayoutService $payouts = null)
     {
         parent::__construct($pdo);
@@ -58,6 +60,7 @@ final class AdminController extends Controller
 
     // ── Pages ────────────────────────────────────────────────────────
 
+    // หน้าแดชบอร์ดแอดมิน: สรุปสถิติ ออเดอร์ล่าสุด ผู้ใช้ และโมเดล → templates/pages/admin/dashboard.php
     public function dashboard(Request $request): Response
     {
         return $this->pageGuard($request, admin: true) ?? View::page($request, 'pages/admin/dashboard', [
@@ -77,6 +80,7 @@ final class AdminController extends Controller
         ]);
     }
 
+    // หน้าจัดการออเดอร์ กรองตามสถานะ → templates/pages/admin/orders.php
     public function orders(Request $request): Response
     {
         $status = $request->string('status');
@@ -91,6 +95,7 @@ final class AdminController extends Controller
         ]);
     }
 
+    // หน้าจ่ายเงินครีเอเตอร์: กระเป๋าเงิน ประวัติ และค่าธรรมเนียม → templates/pages/admin/payouts.php
     public function payouts(Request $request): Response
     {
         return $this->pageGuard($request, admin: true) ?? View::page($request, 'pages/admin/payouts', [
@@ -107,6 +112,7 @@ final class AdminController extends Controller
 
     // ── JSON API ─────────────────────────────────────────────────────
 
+    // API ลบผู้ใช้: ห้ามลบตัวเองหรือคนที่มีประวัติซื้อขาย แล้วลบโมเดลกับไฟล์ของผู้ใช้นั้นด้วย
     protected function deleteUser(Request $request): Response
     {
         $this->guard($request, admin: true);
@@ -122,6 +128,7 @@ final class AdminController extends Controller
         return $this->ok(['message' => 'ลบผู้ใช้งานสำเร็จ']);
     }
 
+    // API ลบโมเดล (ลบไม่ได้ถ้าโมเดลเคยขายแล้ว)
     protected function deleteModel(Request $request): Response
     {
         $this->guard($request, admin: true);
@@ -132,6 +139,7 @@ final class AdminController extends Controller
         return $this->ok(['message' => 'ลบโมเดลสำเร็จ']);
     }
 
+    // API สร้างรายการจ่ายเงินให้ครีเอเตอร์ (ยอดคงเหลือต้องพอ)
     protected function createPayout(Request $request): Response
     {
         $this->guard($request, admin: true);
@@ -144,6 +152,7 @@ final class AdminController extends Controller
         return $this->ok(['payout_id' => $payoutId]);
     }
 
+    // API ยืนยันการโอนเงิน: บันทึกสลิปไว้ที่ uploads/payout_slips/ ถ้าทำรายการไม่สำเร็จจะลบสลิปทิ้ง
     protected function transferPayout(Request $request): Response
     {
         $this->guard($request, admin: true);
@@ -168,6 +177,7 @@ final class AdminController extends Controller
         return $this->ok();
     }
 
+    // API ปฏิเสธรายการจ่ายเงิน พร้อมหมายเหตุ
     protected function rejectPayout(Request $request): Response
     {
         $this->guard($request, admin: true);
@@ -179,6 +189,7 @@ final class AdminController extends Controller
         return $this->ok();
     }
 
+    // API แก้ค่าธรรมเนียมแพลตฟอร์ม (0–100%) บันทึกลง DB
     protected function updateFee(Request $request): Response
     {
         $this->guard($request, admin: true);

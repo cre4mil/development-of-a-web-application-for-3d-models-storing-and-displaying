@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// ฟังก์ชันตรวจความปลอดภัย: อีเมล CSRF นามสกุลไฟล์ ชื่อไฟล์ และการ redirect
 final class Security
 {
     /** Formats the browser viewer can render directly. */
@@ -13,6 +14,7 @@ final class Security
 
     private const ALLOWED_EMAIL_DOMAINS = ['gmail.com', 'hotmail.com'];
 
+    // ตรวจรูปแบบอีเมล (รับเฉพาะ @gmail.com และ @hotmail.com)
     public static function isAllowedEmail(string $email): bool
     {
         $email = trim($email);
@@ -24,11 +26,13 @@ final class Security
         return in_array($domain, self::ALLOWED_EMAIL_DOMAINS, true);
     }
 
+    // เช็กว่าเป็นรหัสผ่านที่เข้ารหัสแล้ว
     public static function isPasswordHash(string $value): bool
     {
         return preg_match('/^\$(2y|argon2(id|i))\$/', $value) === 1;
     }
 
+    // เทียบ CSRF token แบบปลอดภัย
     public static function isValidCsrfToken(?string $submitted, ?string $sessionToken): bool
     {
         return $submitted !== null
@@ -38,6 +42,7 @@ final class Security
             && hash_equals($sessionToken, $submitted);
     }
 
+    // ตรวจนามสกุลไฟล์ที่อนุญาตให้อัปโหลด
     public static function isAllowedUploadExtension(string $filename, string $kind): bool
     {
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -46,6 +51,7 @@ final class Security
         return in_array($extension, $allowedExtensions, true);
     }
 
+    // ตรวจชื่อไฟล์ที่เก็บว่าปลอดภัย (ไม่มี ../ หรือ path แปลกๆ)
     public static function isSafeStoredFilename(string $filename): bool
     {
         return $filename !== ''
@@ -54,6 +60,7 @@ final class Security
             && !str_contains($filename, '..');
     }
 
+    // อนุญาตให้ redirect ไปหน้าในเว็บนี้เท่านั้น (กันพาไปเว็บอื่น)
     /**
      * Accepts only same-site page paths such as "model.php?id=3" to prevent open redirects.
      */

@@ -6,22 +6,26 @@ namespace App\Support;
 
 use PDO;
 
+// สร้างและแชร์การเชื่อมต่อฐานข้อมูล (PDO) จากค่าใน .env
 /** Lazily creates the shared PDO connection from environment configuration. */
 final class Database
 {
     private static ?PDO $connection = null;
 
+    // คืนการเชื่อมต่อเดิม ถ้ายังไม่มีให้สร้างใหม่
     public static function connection(): PDO
     {
         return self::$connection ??= self::connect();
     }
 
+    // เปลี่ยนการเชื่อมต่อ (ใช้ในเทสต์)
     /** Replaces the shared connection (tests) or resets it when null. */
     public static function use(?PDO $pdo): void
     {
         self::$connection = $pdo;
     }
 
+    // เชื่อมต่อ MySQL ด้วย DB_HOST/DB_NAME/DB_USER/DB_PASSWORD
     public static function connect(): PDO
     {
         $dsn = Config::env('DB_DSN');
@@ -41,6 +45,7 @@ final class Database
         ]);
     }
 
+    // คำสั่ง INSERT ที่ข้ามแถวซ้ำ ให้ตรงกับชนิด DB
     /** Portable "insert and skip duplicates" prefix for the active driver. */
     public static function insertIgnore(PDO $pdo): string
     {

@@ -1,3 +1,4 @@
+// ตัวดูโมเดล 3D (Three.js) ใช้ในหน้าโมเดล, quick view, embed และตอนสร้างรูปปก
 /**
  * ModelViewer — Three.js based 3D viewer used by the model page, the gallery
  * quick-view dialog, the embed page and the upload thumbnail generator.
@@ -50,6 +51,7 @@
   };
 
   const scripts = new Map();
+  // โหลดไลบรารีภายนอก
   const loadScript = ([src, integrity]) => {
     if (!scripts.has(src)) {
       scripts.set(src, new Promise((resolve, reject) => {
@@ -65,6 +67,7 @@
     return scripts.get(src);
   };
 
+  // โหลดเฉพาะตัวอ่านไฟล์ที่ฟอร์แมตนี้ต้องใช้
   const ensureLibs = async (ext) => {
     const format = FORMATS[ext];
     if (!format) throw new Error(`ยังไม่รองรับไฟล์ .${ext}`);
@@ -86,6 +89,7 @@
   };
   const megabytes = (n) => `${(n / 1048576).toFixed(1)} MB`;
 
+  // คลาสตัวดู 3D: ฉาก กล้อง แสง การหมุน โหมดแสดงผล และแถบเครื่องมือ
   class ModelViewer {
     constructor(root) {
       this.root = root;
@@ -107,6 +111,7 @@
       root._viewer = this;
     }
 
+    // สร้างฉาก กล้อง renderer และตัวควบคุมการหมุน
     /* ---------- setup ---------- */
     async init(ext) {
       await ensureLibs(ext);
@@ -134,6 +139,7 @@
       this.resize();
     }
 
+    // ตั้งค่าแสง
     buildLighting() {
       const T = THREE;
       // A small studio scene baked into an environment map gives metals something to reflect.
@@ -184,6 +190,7 @@
       return texture;
     }
 
+    // ปรับขนาดให้พอดีกรอบ
     resize() {
       if (!this.renderer) return;
       const width = this.root.clientWidth || 640;
@@ -231,6 +238,7 @@
       this.showPoster(false);
     }
 
+    // โหลดโมเดลจาก URL แล้วแสดงในฉาก (แสดงความคืบหน้า/ข้อผิดพลาด)
     async load(url, ext, poster = {}) {
       const token = ++this.token;
       this.unload();
@@ -250,6 +258,7 @@
       }
     }
 
+    // อ่านไฟล์โมเดลตามฟอร์แมต (glb, gltf, obj, fbx, stl ...)
     fetchObject(url, ext, token) {
       const format = FORMATS[ext];
       const loader = new THREE[format.loader]();
@@ -268,6 +277,7 @@
       });
     }
 
+    // ใส่โมเดลลงฉากแล้วจัดกล้อง
     setModel(object) {
       this.model = object;
       this.scene.add(object);
@@ -288,6 +298,7 @@
       }
     }
 
+    // เอาโมเดลออกจากฉาก / ทำลายตัวดูทั้งหมด
     unload() {
       if (!this.model) return;
       this.clearOverlays();
@@ -317,6 +328,7 @@
       }
     }
 
+    // กลับมุมกล้องเริ่มต้น
     /* ---------- camera ---------- */
     resetView() {
       const T = THREE;
@@ -336,6 +348,7 @@
       this.wireSize = max;
     }
 
+    // สถิติของโมเดล (จำนวนจุด หน้า วัสดุ ฯลฯ)
     /* ---------- statistics ---------- */
     stats() {
       let vertices = 0;
@@ -397,6 +410,7 @@
       return material;
     }
 
+    // เปลี่ยนโหมดแสดงผลวัสดุ
     applyMode() {
       if (!this.model) return;
       this.renderer.toneMapping = this.mode === 'noPost' ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
@@ -443,6 +457,7 @@
       return wire;
     }
 
+    // วาดเส้น wireframe/overlay ใหม่
     refreshOverlays() {
       this.clearOverlays();
       if (!this.model) return;
@@ -461,6 +476,7 @@
       });
     }
 
+    // ผูกปุ่มบนแถบเครื่องมือของตัวดู
     /* ---------- toolbar + inspector wiring ---------- */
     bindUi() {
       const root = this.root;
@@ -491,6 +507,7 @@
       navigator.xr?.isSessionSupported?.('immersive-vr').then((supported) => { if (supported && vr) vr.hidden = false; }).catch(() => {});
     }
 
+    // จัดการปุ่มแต่ละตัวบนแถบเครื่องมือ
     onToolbar(name, button) {
       switch (name) {
         case 'help': this.root.querySelector('[data-viewer-help]')?.classList.toggle('open'); button.classList.toggle('active'); break;
@@ -544,6 +561,7 @@
       }
     }
 
+    // ถ่ายภาพมุมปัจจุบันเป็น PNG (ใช้ทำรูปปก)
     /* ---------- thumbnail ---------- */
     /** Renders the current view onto a 4:3 PNG (dark studio background). */
     captureThumbnail(width = 640, height = 480) {
@@ -568,6 +586,7 @@
   const mountAll = () => {
     document.querySelectorAll('[data-viewer][data-src]').forEach((root) => {
       if (root.dataset.src && !root._viewer) {
+        // เริ่มตัวดูทุกตัวที่มี data-src บนหน้า
         new ModelViewer(root).load(root.dataset.src, root.dataset.ext);
       }
     });

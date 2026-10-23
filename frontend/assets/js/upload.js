@@ -1,3 +1,4 @@
+// กล่องอัปโหลดโมเดล: ลากวางไฟล์, สร้างรูปปกอัตโนมัติจากโมเดล, ส่งไป api/models.php พร้อมแถบความคืบหน้า
 /**
  * Upload dialog: drag & drop, automatic thumbnail rendered from the chosen
  * model, and an upload progress bar. Requires core.js.
@@ -16,11 +17,13 @@
   let customThumb = false;
   let generation = 0;
 
+  // แสดงรูปปกตัวอย่าง
   const showThumb = (file) => {
     preview.src = URL.createObjectURL(file);
     preview.classList.add('show');
   };
 
+  // ใส่รูปปกที่สร้างอัตโนมัติลงใน input
   const assignThumb = (blob) => {
     const file = new File([blob], 'thumbnail.png', { type: 'image/png' });
     const transfer = new DataTransfer();
@@ -29,6 +32,7 @@
     showThumb(file);
   };
 
+  // โหลดโมเดลด้วย viewer.js แล้วถ่ายภาพเป็นรูปปก
   /** Renders the chosen model off-screen and stores a snapshot as the thumbnail. */
   const generateThumbnail = async (file) => {
     const ticket = ++generation;
@@ -68,6 +72,7 @@
     });
   });
 
+  // เลือกไฟล์โมเดลแล้วสร้างรูปปกให้
   modelInput.addEventListener('change', () => {
     const file = modelInput.files[0];
     if (!file) return;
@@ -87,6 +92,7 @@
     if (file) showThumb(file);
   });
 
+  // ส่งฟอร์มด้วย XMLHttpRequest เพื่อแสดงเปอร์เซ็นต์การอัปโหลด
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const submit = $('#uploadSubmit');
@@ -135,6 +141,7 @@
     request.send(new FormData(form));
   });
 
+  // ปิดกล่องแล้วล้างฟอร์ม
   document.getElementById('uploadModal').addEventListener('hidden.bs.modal', () => {
     generation++;
     customThumb = false;

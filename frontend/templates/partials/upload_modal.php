@@ -1,4 +1,5 @@
 <?php
+// กล่องอัปโหลดโมเดลใหม่: upload.js ทำรูปตัวอย่าง แล้วส่งฟอร์มไป api/models.php
 $formats = App\Services\UploadValidator::modelFormats();
 $accept = '.' . implode(',.', App\Services\Security::MODEL_EXTENSIONS);
 ?>

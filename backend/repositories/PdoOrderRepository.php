@@ -7,12 +7,14 @@ namespace App\Repositories;
 use PDO;
 use Throwable;
 
+// บันทึก/อ่านข้อมูลออเดอร์ในฐานข้อมูล (ใช้โดย OrderService)
 final class PdoOrderRepository implements OrderStore
 {
     public function __construct(private readonly PDO $pdo)
     {
     }
 
+    // โมเดลที่ซื้อได้ (สาธารณะและมีราคา)
     public function purchasableModels(array $modelIds): array
     {
         $placeholders = implode(',', array_fill(0, count($modelIds), '?'));
@@ -22,6 +24,7 @@ final class PdoOrderRepository implements OrderStore
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // เช็กว่าผู้ซื้อมีออเดอร์โมเดลนี้ที่อนุมัติหรือรออยู่แล้ว (กันซื้อซ้ำ)
     public function hasActiveOrder(int $buyerId, int $modelId): bool
     {
         $statement = $this->pdo->prepare(
@@ -32,12 +35,14 @@ final class PdoOrderRepository implements OrderStore
         return $statement->fetchColumn() !== false;
     }
 
+    // ค่าธรรมเนียมแพลตฟอร์มปัจจุบัน
     public function platformFeePercent(float $default): float
     {
         $fee = $this->pdo->query("SELECT setting_value FROM platform_settings WHERE setting_key = 'platform_fee_pct'")->fetchColumn();
         return $fee === false ? $default : (float) $fee;
     }
 
+    // เพิ่มออเดอร์และรายการสินค้าลง DB
     public function createOrder(string $reference, int $buyerId, float $total, string $slipUrl, string $status, ?string $note, array $items): int
     {
         $statement = $this->pdo->prepare(
@@ -55,6 +60,7 @@ final class PdoOrderRepository implements OrderStore
         return $orderId;
     }
 
+    // หาออเดอร์ / เช็กว่าเป็นแอดมิน
     public function findOrder(int $orderId): ?array
     {
         $statement = $this->pdo->prepare('SELECT id, payment_status FROM orders WHERE id = ?');
@@ -71,12 +77,14 @@ final class PdoOrderRepository implements OrderStore
         return (bool) $statement->fetchColumn();
     }
 
+    // อัปเดตสถานะออเดอร์ (อนุมัติ/ปฏิเสธ)
     public function updateStatus(int $orderId, string $status, ?string $note, int $adminId): void
     {
         $statement = $this->pdo->prepare('UPDATE orders SET payment_status = ?, admin_note = ?, admin_approved_by = ?, approved_at = ? WHERE id = ?');
         $statement->execute([$status, $note, $adminId, $status === 'approved' ? date('Y-m-d H:i:s') : null, $orderId]);
     }
 
+    // รายได้ของครีเอเตอร์แต่ละคนในออเดอร์
     public function earningsForOrder(int $orderId): array
     {
         $statement = $this->pdo->prepare('SELECT creator_id, SUM(creator_earning) AS earn FROM order_items WHERE order_id = ? GROUP BY creator_id');
@@ -84,6 +92,7 @@ final class PdoOrderRepository implements OrderStore
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // เพิ่มเงินเข้ากระเป๋าครีเอเตอร์
     public function creditWallet(int $creatorId, float $amount): void
     {
         $sql = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite'
@@ -93,6 +102,7 @@ final class PdoOrderRepository implements OrderStore
         $statement->execute([$creatorId, $amount, $amount]);
     }
 
+    // ทำหลายคำสั่งใน transaction เดียว (พังให้ย้อนกลับทั้งหมด)
     public function transaction(callable $operation): mixed
     {
         $this->pdo->beginTransaction();

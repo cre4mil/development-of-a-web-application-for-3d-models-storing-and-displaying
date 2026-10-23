@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+// ตั้งค่าเริ่มต้นของระบบ: โหลดคลาส อ่าน .env และเปิด session
 /** One-time process setup: autoloading, .env and the PHP session. */
 final class Bootstrap
 {
@@ -15,6 +16,7 @@ final class Bootstrap
         'App\\Support\\' => 'support',
     ];
 
+    // เริ่มระบบ: โหลด autoload ของ composer หรือตัวโหลดในตัว แล้วอ่าน .env และเปิด session
     public static function init(string $root): void
     {
         if (is_file($root . '/vendor/autoload.php')) {
@@ -28,6 +30,7 @@ final class Bootstrap
         self::startSession(PHP_SAPI === 'cli', $_SERVER);
     }
 
+    // ตัวโหลดคลาสอัตโนมัติ (App\... → backend/...)
     /** @return callable(string): void */
     public static function autoloader(string $root): callable
     {
@@ -41,6 +44,7 @@ final class Bootstrap
         };
     }
 
+    // เปิด session พร้อมตั้งค่าคุกกี้ให้ปลอดภัย
     /** @param array<string, mixed> $server */
     public static function startSession(bool $isCli, array $server): void
     {

@@ -1,4 +1,5 @@
 <?php
+// แถบเมนูของหน้าแอดมิน (ภาพรวม / Orders / Payout)
 /** @var string $section active admin section */
 $items = [
     'dashboard' => ['admin.php', 'bi-grid-1x2', 'ภาพรวม'],

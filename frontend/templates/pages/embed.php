@@ -1,4 +1,5 @@
 <?php
+// หน้าตัวดู 3D อย่างเดียว สำหรับฝังใน iframe ของเว็บอื่น (model.php?embed=1)
 /**
  * Bare viewer for <iframe> embedding.
  *

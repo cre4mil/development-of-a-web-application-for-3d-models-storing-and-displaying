@@ -1,3 +1,4 @@
+// ฟังก์ชันกลางที่ทุกหน้าใช้: เรียก API, toast, กล่องยืนยัน, ปุ่มถูกใจ/บันทึก/ติดตาม/แก้ไข/ลบ (โหลดจาก layout.php)
 /**
  * Core UI helpers shared by every page: API client, toasts, confirm dialog and
  * the delegated click handlers for like / save / follow / edit / hide / delete.
@@ -15,6 +16,7 @@
 
   const App = (window.App = { $, $$, csrf, isAuth, modal, actions: {} });
 
+  // แสดงข้อความแจ้งเตือนมุมจอ
   /* ---------- Toasts ---------- */
   App.toast = (message, type = 'info') => {
     const stack = document.getElementById('toastStack');
@@ -30,6 +32,7 @@
     setTimeout(() => item.remove(), 4500);
   };
 
+  // เรียก API ฝั่ง PHP (แนบ CSRF token) แล้วคืน JSON
   /* ---------- API client ---------- */
   App.api = async (url, { method = 'GET', data = null } = {}) => {
     const options = { method, headers: { 'X-CSRF-Token': csrf(), Accept: 'application/json' } };
@@ -53,8 +56,10 @@
     }
     return json;
   };
+  // ส่ง POST ไป API
   App.post = (url, data) => App.api(url, { method: 'POST', data });
 
+  // เรียก API แล้วแสดง toast ถ้าผิดพลาด (คืน null เมื่อไม่สำเร็จ)
   /** Runs an async task and reports failures as a toast. Returns the result or null. */
   App.attempt = async (task) => {
     try {
@@ -65,6 +70,7 @@
     }
   };
 
+  // ถ้ายังไม่ล็อกอิน ให้เปิดกล่องล็อกอิน
   App.requireLogin = () => {
     if (!isAuth()) {
       modal('loginModal').show();
@@ -72,6 +78,7 @@
     return isAuth();
   };
 
+  // เปิดกล่องยืนยัน (confirm_modal.php) แล้วรอผู้ใช้กด
   App.confirm = ({ title = 'ยืนยันการดำเนินการ', message = '', ok = 'ยืนยัน' } = {}) =>
     new Promise((resolve) => {
       const element = document.getElementById('confirmModal');
@@ -92,6 +99,7 @@
       modal('confirmModal').show();
     });
 
+  // โหลดไฟล์ JS ภายนอกเมื่อจำเป็น (โหลดครั้งเดียว)
   App.loadScript = (() => {
     const cache = new Map();
     return (src, integrity = '') => {
@@ -112,6 +120,7 @@
     };
   })();
 
+  // อัปเดตปุ่มถูกใจ/บันทึก/ซ่อน ทุกจุดบนหน้าให้ตรงกับสถานะใหม่
   /* ---------- UI state updaters ---------- */
   App.applyLike = (id, liked, count) => {
     $$(`[data-action="like"][data-id="${id}"]`).forEach((button) => {
@@ -172,6 +181,7 @@
     }
   };
 
+  // ปุ่มถูกใจ → api/social.php
   /* ---------- Delegated actions ---------- */
   App.actions.like = async (button) => {
     if (!App.requireLogin()) return;
@@ -181,6 +191,7 @@
     if (data) App.applyLike(button.dataset.id, data.liked, data.count);
   };
 
+  // ปุ่มบันทึก → api/social.php
   App.actions.save = async (button) => {
     if (!App.requireLogin()) return;
     const data = await App.attempt(() => App.post('api/social.php', { action: 'save', id: button.dataset.id }));
@@ -190,6 +201,7 @@
     }
   };
 
+  // ปุ่มติดตาม → api/social.php
   App.actions.follow = async (button) => {
     if (!App.requireLogin()) return;
     const data = await App.attempt(() => App.post('api/social.php', { action: 'follow', user_id: button.dataset.user }));
@@ -201,6 +213,7 @@
     $$('[data-followers]').forEach((element) => { element.textContent = data.followers; });
   };
 
+  // ปุ่มคัดลอกข้อความ/ลิงก์
   App.actions.copy = async (button) => {
     const target = $(button.dataset.target);
     const text = target.value ?? target.textContent;
@@ -213,6 +226,7 @@
     }
   };
 
+  // ปุ่มแก้ไข: โหลดข้อมูลจาก api/models.php?action=get แล้วเปิดกล่องแก้ไข
   App.actions['edit-model'] = async (button) => {
     const data = await App.attempt(() => App.api(`api/models.php?action=get&id=${encodeURIComponent(button.dataset.id)}`));
     if (!data) return;
@@ -227,6 +241,7 @@
     modal('editModal').show();
   };
 
+  // ปุ่มซ่อน/แสดงโมเดล → api/models.php
   App.actions['toggle-visibility'] = async (button) => {
     const next = button.dataset.public === '1' ? 0 : 1;
     const data = await App.attempt(() => App.post('api/models.php', { action: 'visibility', id: button.dataset.id, is_public: next }));
@@ -236,6 +251,7 @@
     }
   };
 
+  // ลบโมเดล (ถามยืนยันก่อน) → api/models.php
   App.deleteModel = async (id, title) => {
     const accepted = await App.confirm({ title: 'ลบโมเดล', message: `ลบ “${title}” ถาวร? ไฟล์และข้อมูลที่เกี่ยวข้องจะถูกลบทั้งหมด`, ok: 'ลบโมเดล' });
     if (!accepted) return false;
@@ -266,6 +282,7 @@
     }
   };
 
+  // คลิกที่ element ที่มี data-action จะเรียกฟังก์ชันใน App.actions ที่ชื่อตรงกัน
   document.addEventListener('click', (event) => {
     const element = event.target.closest('[data-action]');
     const handler = element && App.actions[element.dataset.action];
@@ -285,6 +302,7 @@
   document.addEventListener('error', (event) => useFallback(event.target), true);
   $$('img').filter((image) => image.complete && image.naturalWidth === 0).forEach(useFallback); // failed before this script ran
 
+  // ส่งฟอร์มแก้ไขโมเดล → api/models.php
   /* ---------- Edit form ---------- */
   $('#editForm')?.addEventListener('submit', async (event) => {
     event.preventDefault();

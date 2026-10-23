@@ -1,4 +1,5 @@
 <?php
+// กล่องดูโมเดลแบบเร็ว (เปิดจากการ์ดในแกลเลอรี ทำงานผ่าน gallery.js)
 /** @var array{id: int, name: string, admin: bool} $user */
 ?>
 <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="qvTitle" aria-hidden="true">

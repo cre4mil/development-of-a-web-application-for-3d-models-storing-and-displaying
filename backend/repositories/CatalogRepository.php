@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Support\Database;
 use PDO;
 
+// อ่าน/เขียนข้อมูลโมเดล แท็ก ยอดไลก์ และคอมเมนต์ ในฐานข้อมูล
 /** Read/write access to models, tags and their aggregate counters. */
 final class CatalogRepository
 {
@@ -21,6 +22,7 @@ final class CatalogRepository
     {
     }
 
+    // หาโมเดลจาก id พร้อมชื่อผู้อัปโหลด ยอดไลก์ และคอมเมนต์
     /** @return array<string, mixed>|null */
     public function find(int $id): ?array
     {
@@ -34,6 +36,7 @@ final class CatalogRepository
         return $model === false ? null : $model;
     }
 
+    // ค้นหาโมเดลสาธารณะในแกลเลอรี: คำค้น แท็ก ไลเซนส์ ช่วงวันที่ การเรียง และแบ่งหน้า
     /**
      * Public gallery search.
      *
@@ -92,6 +95,7 @@ final class CatalogRepository
         return ['rows' => $rows->fetchAll(), 'total' => $total, 'page' => $page, 'pages' => $pages];
     }
 
+    // แท็กของหลายโมเดลในครั้งเดียว
     /**
      * @param list<int> $modelIds
      * @return array<int, list<string>>
@@ -112,6 +116,7 @@ final class CatalogRepository
         return $map;
     }
 
+    // ชื่อแท็กของโมเดล / แท็กทั้งหมดที่ถูกใช้งาน
     /** @return list<string> */
     public function tagNames(int $modelId): array
     {
@@ -124,6 +129,7 @@ final class CatalogRepository
         return $this->pdo->query('SELECT name FROM tags WHERE id IN (SELECT tag_id FROM model_tags) ORDER BY name ASC')->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    // โมเดลแนะนำ เรียงตามจำนวนแท็กที่ตรงกัน
     /** @return list<array<string, mixed>> */
     public function suggested(int $modelId, int $limit): array
     {
@@ -139,6 +145,7 @@ final class CatalogRepository
         return $statement->fetchAll();
     }
 
+    // เพิ่มโมเดลใหม่ลงตาราง models แล้วคืน id
     /** @param array<string, mixed> $data */
     public function create(array $data): int
     {
@@ -148,6 +155,7 @@ final class CatalogRepository
         return (int) $this->pdo->lastInsertId();
     }
 
+    // แก้ไขข้อมูลโมเดล
     /** @param array<string, mixed> $data */
     public function update(int $id, array $data): void
     {
@@ -155,22 +163,26 @@ final class CatalogRepository
             ->execute([$data['title'], $data['description'], $data['filename'], $data['thumb'], $data['license'], $data['price'], $id]);
     }
 
+    // บันทึกชื่อไฟล์ที่แปลงแล้ว (glTF/GLB/USDZ/OBJ)
     public function setConversions(int $id, ?string $gltf, ?string $glb, ?string $usdz, ?string $obj): void
     {
         $this->pdo->prepare('UPDATE models SET file_gltf = ?, file_glb = ?, file_usdz = ?, file_obj = ? WHERE id = ?')
             ->execute([$gltf, $glb, $usdz, $obj, $id]);
     }
 
+    // ตั้งค่าสาธารณะ/ส่วนตัว
     public function setVisibility(int $id, bool $public): void
     {
         $this->pdo->prepare('UPDATE models SET is_public = ? WHERE id = ?')->execute([$public ? 1 : 0, $id]);
     }
 
+    // เพิ่มยอดวิว +1
     public function incrementViews(int $id): void
     {
         $this->pdo->prepare('UPDATE models SET view_count = view_count + 1 WHERE id = ?')->execute([$id]);
     }
 
+    // ลบแท็กเดิมของโมเดลแล้วผูกแท็กใหม่ (สร้างแท็กที่ยังไม่มี)
     /** @param list<string> $tags normalized tag names */
     public function syncTags(int $modelId, array $tags): void
     {
@@ -186,6 +198,7 @@ final class CatalogRepository
         }
     }
 
+    // เช็กว่าโมเดลเคยถูกขายหรือไม่
     public function hasSales(int $modelId): bool
     {
         $statement = $this->pdo->prepare('SELECT 1 FROM order_items WHERE model_id = ? LIMIT 1');
@@ -194,6 +207,7 @@ final class CatalogRepository
         return $statement->fetchColumn() !== false;
     }
 
+    // ลบโมเดลและข้อมูลที่เกี่ยวข้องทั้งหมดใน DB
     /** Removes a model and everything that hangs off it. Callers must check hasSales() first. */
     public function delete(int $modelId): void
     {
@@ -203,6 +217,7 @@ final class CatalogRepository
         $this->pdo->prepare('DELETE FROM models WHERE id = ?')->execute([$modelId]);
     }
 
+    // โมเดลของผู้ใช้ / ที่บันทึกไว้ / ที่กดถูกใจ (หน้าโปรไฟล์)
     /** @return list<array<string, mixed>> */
     public function ownedBy(int $userId): array
     {
@@ -234,12 +249,14 @@ final class CatalogRepository
         return $statement->fetchAll();
     }
 
+    // รายการโมเดลสำหรับหน้าแอดมิน
     /** @return list<array<string, mixed>> */
     public function adminList(): array
     {
         return $this->pdo->query('SELECT m.id, m.title, m.is_public, m.price, u.username AS uploader FROM models m JOIN users u ON u.id = m.user_id ORDER BY m.id DESC')->fetchAll();
     }
 
+    // จำนวนโมเดลทั้งหมด
     public function count(): int
     {
         return (int) $this->pdo->query('SELECT COUNT(*) FROM models')->fetchColumn();
