@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// จัดการไฟล์ในโฟลเดอร์ uploads/: บันทึก หา เช็กขนาด และลบ
 /** Stores, locates and removes files inside the uploads directory. */
 final class ModelFiles
 {
@@ -27,16 +28,19 @@ final class ModelFiles
         return $this->directory;
     }
 
+    // ที่อยู่เต็มของไฟล์ใน uploads/
     public function path(string $name): string
     {
         return $this->directory . $name;
     }
 
+    // สร้างชื่อไฟล์สุ่ม (กันชื่อซ้ำและเดาไม่ได้)
     public function randomName(string $extension, string $suffix = ''): string
     {
         return bin2hex(random_bytes(8)) . $suffix . '.' . $extension;
     }
 
+    // ย้ายไฟล์ที่อัปโหลดเข้า uploads/
     /** @param array<string, mixed> $upload one entry of $_FILES */
     public function store(array $upload, string $name): bool
     {
@@ -48,6 +52,7 @@ final class ModelFiles
         return ($this->mover)((string) ($upload['tmp_name'] ?? ''), $target);
     }
 
+    // เช็กว่าไฟล์มีอยู่จริงและอยู่ใน uploads/ (กันการเข้าถึงไฟล์นอกโฟลเดอร์)
     /** True for an existing file below the uploads directory; rejects traversal, backslashes and absolute paths. */
     public function exists(?string $name): bool
     {
@@ -57,11 +62,13 @@ final class ModelFiles
             && is_file($this->path($name));
     }
 
+    // ขนาดไฟล์ (byte)
     public function size(?string $name): int
     {
         return $this->exists($name) ? (int) filesize($this->path((string) $name)) : 0;
     }
 
+    // ลบไฟล์พร้อมไฟล์ประกอบ (.mtl ของ OBJ, .bin ของ glTF)
     /** Deletes a file together with the sidecar Blender writes next to it (.mtl for OBJ, .bin for glTF). */
     public function delete(?string $name): void
     {
@@ -73,6 +80,7 @@ final class ModelFiles
         }
     }
 
+    // ลบทุกไฟล์ของโมเดล (ต้นฉบับ ไฟล์แปลง รูปปก)
     /** Removes every file a model row points at. @param array<string, mixed> $model */
     public function deleteAll(array $model): void
     {

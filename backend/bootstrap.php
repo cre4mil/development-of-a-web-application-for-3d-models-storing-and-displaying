@@ -7,4 +7,5 @@ declare(strict_types=1);
 require_once __DIR__ . '/support/Config.php';
 require_once __DIR__ . '/support/Bootstrap.php';
 
+// เริ่มระบบ: โหลดคลาสอัตโนมัติ อ่าน .env และเปิด session (ทุกไฟล์ใน frontend/ เรียกไฟล์นี้ก่อน)
 App\Support\Bootstrap::init(dirname(__DIR__));

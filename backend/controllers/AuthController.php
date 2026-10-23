@@ -12,6 +12,7 @@ use App\Services\Authentication;
 use App\Services\Security;
 use PDO;
 
+// ล็อกอิน สมัครสมาชิก และออกจากระบบ (ฟอร์ม POST แล้ว redirect กลับหน้าเดิมพร้อมข้อความแจ้ง)
 /** Login, registration and logout: form posts that redirect back to the page with a flash message. */
 final class AuthController extends Controller
 {
@@ -23,6 +24,7 @@ final class AuthController extends Controller
         $this->accounts = new AccountRepository($pdo);
     }
 
+    // ล็อกอิน: ตรวจอีเมลกับรหัสผ่าน แล้วกลับไปหน้าที่ผู้ใช้อยู่ (login.php)
     public function login(Request $request): Response
     {
         if (!$request->isPost()) {
@@ -36,6 +38,7 @@ final class AuthController extends Controller
         return Response::redirect(Security::safeRedirect($request->string('next')));
     }
 
+    // สมัครสมาชิก: ตรวจข้อมูล สร้างบัญชี แล้วกลับไปหน้าเดิม (register.php)
     public function register(Request $request): Response
     {
         if (!$request->isPost()) {
@@ -53,6 +56,7 @@ final class AuthController extends Controller
         return Response::redirect(Security::safeRedirect($request->string('next')));
     }
 
+    // ออกจากระบบ: ล้าง session แล้วกลับหน้าแรก (logout.php)
     public function logout(Request $request): Response
     {
         $request->session()->destroy();
@@ -60,6 +64,7 @@ final class AuthController extends Controller
         return Response::redirect('index.php');
     }
 
+    // ตรวจอีเมล/รหัสผ่านกับ DB ถ้าถูกต้องให้บันทึกผู้ใช้ลง session
     /** @return string|null an error message, or null once the user is signed in */
     private function authenticate(Session $session, string $email, string $password): ?string
     {
@@ -79,6 +84,7 @@ final class AuthController extends Controller
         return $error;
     }
 
+    // ตรวจข้อมูลสมัคร เช็กอีเมลซ้ำ แล้วบันทึกผู้ใช้ใหม่ (เข้ารหัสรหัสผ่าน) ลง DB
     /** @return string|null an error message, or null once the account exists */
     private function createAccount(string $username, string $email, string $password, string $confirmation): ?string
     {

@@ -1,3 +1,4 @@
+// หน้าโมเดล: สถิติโมเดล, แชร์/ฝัง, คอมเมนต์ และการชำระเงิน
 /**
  * Model page: viewer statistics, share / embed dialogs, comments and the
  * PromptPay checkout. Requires core.js and viewer.js.
@@ -11,6 +12,7 @@
   const modelId = page.dataset.modelId;
   const modelTitle = page.dataset.title;
 
+  // แสดงสถิติ (จำนวนจุด/หน้า ฯลฯ) หลังตัวดู 3D โหลดเสร็จ
   /* ---------- Statistics from the loaded model ---------- */
   document.addEventListener('viewer:loaded', (event) => {
     const s = event.detail;
@@ -29,6 +31,7 @@
 
   /* ---------- Share & embed ---------- */
   const absolute = (path) => new URL(path, document.baseURI).href;
+  // เติมลิงก์ในกล่องแชร์และโค้ด iframe ในกล่องฝัง
   document.getElementById('shareModal')?.addEventListener('show.bs.modal', () => {
     const link = absolute(`model.php?id=${modelId}`);
     $('#shareLink').value = link;
@@ -45,6 +48,7 @@
 
   /* ---------- Comments ---------- */
   const list = $('#commentList');
+  // สร้าง HTML ของคอมเมนต์ 1 รายการ
   const renderComment = (comment, me, isAdmin) => {
     const row = document.createElement('div');
     row.className = 'comment';
@@ -84,6 +88,7 @@
     $('#commentCountTop').textContent = count;
   };
 
+  // โหลดคอมเมนต์จาก api/social.php
   const loadComments = async () => {
     const data = await App.attempt(() => App.api(`api/social.php?action=comments&model_id=${modelId}`));
     if (!data) return;
@@ -95,12 +100,14 @@
     showCount(data.comments.length);
   };
 
+  // ลบคอมเมนต์ → api/social.php
   App.actions['comment-delete'] = async (button) => {
     if (!await App.confirm({ title: 'ลบความคิดเห็น', message: 'ต้องการลบความคิดเห็นนี้หรือไม่?', ok: 'ลบ' })) return;
     const data = await App.attempt(() => App.post('api/social.php', { action: 'comment_delete', id: button.dataset.id }));
     if (data) loadComments();
   };
 
+  // ส่งคอมเมนต์ใหม่ → api/social.php
   $('#commentForm')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const field = $('#commentBody');
@@ -119,6 +126,7 @@
     const BANKS = { kbank: 'ธนาคารกสิกรไทย (KBANK)', scb: 'ธนาคารไทยพาณิชย์ (SCB)', bbl: 'ธนาคารกรุงเทพ (BBL)', ktb: 'ธนาคารกรุงไทย (KTB)', krungsri: 'ธนาคารกรุงศรีอยุธยา (BAY)' };
     const QR_LIB = ['https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js', 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k'];
 
+    // เปิดกล่องชำระเงิน: ดึงข้อมูลจาก api/orders.php?action=qr แล้ววาด QR หรือแสดงเลขบัญชี
     payment.addEventListener('show.bs.modal', async () => {
       ['#qrError', '#qrBox', '#bankInfo', '#qrPrice'].forEach((selector) => $(selector).classList.add('d-none'));
       $('#qrLoading').classList.remove('d-none');
@@ -146,6 +154,7 @@
       $('#qrPrice').classList.remove('d-none');
     });
 
+    // ส่งสลิปสั่งซื้อ → api/orders.php
     $('#paymentForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const submit = $('button[type="submit"]', event.currentTarget);

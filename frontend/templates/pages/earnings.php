@@ -1,4 +1,5 @@
 <?php
+// หน้ารายได้ครีเอเตอร์: ยอดเงิน, กราฟ (earnings.js), ยอดขาย, ประวัติรับเงิน, ฟอร์มบัญชีธนาคาร (POST → creator_earnings.php)
 /**
  * Creator earnings dashboard.
  *

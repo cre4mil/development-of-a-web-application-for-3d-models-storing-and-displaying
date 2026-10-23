@@ -12,6 +12,7 @@ use App\Repositories\SocialRepository;
 use App\Services\ModelManagement;
 use PDO;
 
+// API ถูกใจ บันทึก ติดตาม และคอมเมนต์ (เรียกจาก api/social.php)
 /** Likes, saved models, follows and comments. */
 final class SocialController extends Controller
 {
@@ -38,6 +39,7 @@ final class SocialController extends Controller
         $this->accounts = new AccountRepository($pdo);
     }
 
+    // API กด/ยกเลิกถูกใจ แล้วส่งจำนวนไลก์ล่าสุดกลับไป
     protected function like(Request $request): Response
     {
         $this->guard($request);
@@ -47,6 +49,7 @@ final class SocialController extends Controller
         return $this->ok(['liked' => $liked, 'count' => $this->social->likeCount($modelId)]);
     }
 
+    // API บันทึก/ยกเลิกบันทึกโมเดลเข้าคอลเลกชัน
     protected function save(Request $request): Response
     {
         $this->guard($request);
@@ -54,6 +57,7 @@ final class SocialController extends Controller
         return $this->ok(['saved' => $this->social->toggleCollection($request->session()->userId(), $this->visibleModelId($request))]);
     }
 
+    // API ติดตาม/เลิกติดตามผู้ใช้ (ห้ามติดตามตัวเอง)
     protected function follow(Request $request): Response
     {
         $this->guard($request);
@@ -68,6 +72,7 @@ final class SocialController extends Controller
         ]);
     }
 
+    // API ดึงคอมเมนต์ทั้งหมดของโมเดล
     protected function comments(Request $request): Response
     {
         $modelId = $this->visibleModelId($request, 'model_id');
@@ -79,6 +84,7 @@ final class SocialController extends Controller
         ]);
     }
 
+    // API เพิ่มคอมเมนต์ (ไม่ว่าง และไม่เกิน 1000 ตัวอักษร)
     protected function addComment(Request $request): Response
     {
         $this->guard($request);
@@ -90,6 +96,7 @@ final class SocialController extends Controller
         return $this->ok(['comment' => $this->social->addComment($modelId, $request->session()->userId(), $body)], 201);
     }
 
+    // API ลบคอมเมนต์ (เจ้าของคอมเมนต์หรือแอดมิน)
     protected function deleteComment(Request $request): Response
     {
         $this->guard($request);
@@ -100,6 +107,7 @@ final class SocialController extends Controller
         return $this->ok();
     }
 
+    // คืน id โมเดลที่ผู้ใช้มีสิทธิ์ดู ถ้าไม่มีสิทธิ์ตอบ 404
     /** @return int id of the requested model, which the visitor must be allowed to see */
     private function visibleModelId(Request $request, string $key = 'id'): int
     {

@@ -1,4 +1,5 @@
 <?php
+// กล่องแก้ไขโมเดล: core.js โหลดข้อมูลจาก api/models.php?action=get แล้วส่งฟอร์มกลับไปที่ api/models.php
 $accept = '.' . implode(',.', App\Services\Security::MODEL_EXTENSIONS);
 ?>
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editTitle" aria-hidden="true">

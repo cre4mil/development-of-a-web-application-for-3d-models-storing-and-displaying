@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http;
 
+// ข้อมูล request ปัจจุบัน: GET, POST, ไฟล์อัปโหลด, header และ session
 /** View of the current HTTP request. */
 final class Request
 {
@@ -26,6 +27,7 @@ final class Request
         $this->session = new Session($sessionData);
     }
 
+    // สร้าง Request จากตัวแปร PHP ($_GET, $_POST, $_FILES, $_SESSION)
     public static function fromGlobals(): self
     {
         $_SESSION ??= [];
@@ -48,6 +50,7 @@ final class Request
         return (string) ($this->server['REQUEST_URI'] ?? '/');
     }
 
+    // หน้าปัจจุบัน ใช้เป็นหน้ากลับหลังล็อกอิน
     /** Current page as "file.php?query", without the one-shot login flag; used as a post-login return target. */
     public function page(): string
     {
@@ -57,6 +60,7 @@ final class Request
         return $query === '' ? $file : $file . '?' . $query;
     }
 
+    // อ่านค่าจาก GET / POST / ทั้งสองแบบ
     public function query(string $key, mixed $default = null): mixed
     {
         return $this->query[$key] ?? $default;
@@ -73,6 +77,7 @@ final class Request
         return $this->post[$key] ?? $this->query[$key] ?? $default;
     }
 
+    // อ่านค่าเป็นข้อความ (ตัดช่องว่าง), ตัวเลข, รายการ
     public function string(string $key, string $default = ''): string
     {
         $value = $this->input($key, $default);
@@ -93,6 +98,7 @@ final class Request
         return is_array($value) ? $value : [];
     }
 
+    // อ่านไฟล์อัปโหลด
     /** @return array<string, mixed>|null */
     public function file(string $key): ?array
     {
@@ -108,6 +114,7 @@ final class Request
         return isset($this->server[$key]) ? (string) $this->server[$key] : null;
     }
 
+    // เช็กว่าไฟล์ใหญ่เกิน post_max_size จนข้อมูล POST หายหรือไม่
     /** True when the body exceeded post_max_size, which makes PHP drop $_POST and $_FILES. */
     public function bodyWasDiscarded(): bool
     {
@@ -119,6 +126,7 @@ final class Request
         return $this->session;
     }
 
+    // อ่านและตรวจ CSRF token ที่ส่งมากับฟอร์มหรือ header
     public function csrfToken(): ?string
     {
         $token = $this->header('X-CSRF-Token') ?? $this->post('csrf');

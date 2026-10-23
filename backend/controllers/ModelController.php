@@ -19,6 +19,7 @@ use App\Services\UploadValidator;
 use App\Support\Config;
 use PDO;
 
+// หน้ารายละเอียดโมเดล, ดาวน์โหลด และ API อัปโหลด/แก้ไข/ลบโมเดล (เรียกจาก api/models.php)
 /** Model detail page, embed view, downloads and the upload / edit / delete API. */
 final class ModelController extends Controller
 {
@@ -42,6 +43,7 @@ final class ModelController extends Controller
     private readonly ModelConverter $converter;
     private readonly ModelRemover $remover;
 
+    // เตรียม repository, ที่เก็บไฟล์ และตัวแปลงไฟล์ด้วย Blender
     public function __construct(PDO $pdo, ?ModelFiles $files = null, ?ModelConverter $converter = null)
     {
         parent::__construct($pdo);
@@ -55,6 +57,7 @@ final class ModelController extends Controller
 
     // ── Pages ────────────────────────────────────────────────────────
 
+    // หน้าโมเดล: นับยอดวิว เตรียมข้อมูลตัวดู 3D ไลก์ ผู้ติดตาม การซื้อ → templates/pages/model.php (หรือ embed.php ถ้า ?embed=1)
     public function show(Request $request): Response
     {
         $session = $request->session();
@@ -102,6 +105,7 @@ final class ModelController extends Controller
             : View::page($request, 'pages/model', $data);
     }
 
+    // ดาวน์โหลดไฟล์โมเดล (เลือกฟอร์แมตได้) ถ้าเป็นโมเดลขายต้องซื้อและได้รับอนุมัติก่อน (download.php)
     public function download(Request $request): Response
     {
         $model = $this->visibleModel($request->int('id'), $request);
@@ -120,6 +124,7 @@ final class ModelController extends Controller
 
     // ── JSON API ─────────────────────────────────────────────────────
 
+    // API ดึงข้อมูลโมเดลไปใส่ฟอร์มแก้ไข (เจ้าของเท่านั้น)
     /** Model fields for the edit dialog (owner only). */
     protected function get(Request $request): Response
     {
@@ -138,6 +143,7 @@ final class ModelController extends Controller
         ]]);
     }
 
+    // API อัปโหลดโมเดลใหม่: ตรวจไฟล์ บันทึกไฟล์ลง uploads/ บันทึกข้อมูลลง DB แล้วแปลงไฟล์ด้วย Blender
     protected function create(Request $request): Response
     {
         $this->abortUnless(!$request->bodyWasDiscarded(), 413, 'too_large', 'ขนาดไฟล์รวมทั้งหมดใหญ่เกินกว่าที่เซิร์ฟเวอร์รองรับ (เกิน ' . ini_get('post_max_size') . ')');
@@ -165,6 +171,7 @@ final class ModelController extends Controller
         return $this->ok(['id' => $id, 'url' => 'model.php?id=' . $id], 201);
     }
 
+    // API แก้ไขโมเดล: บันทึกไฟล์ใหม่ก่อน แล้วอัปเดต DB และลบไฟล์เก่าที่ไม่ใช้แล้ว
     protected function update(Request $request): Response
     {
         $this->guard($request);
@@ -192,6 +199,7 @@ final class ModelController extends Controller
         return $this->ok(['title' => $title]);
     }
 
+    // API ลบโมเดลของตัวเอง (ลบไม่ได้ถ้าเคยขายแล้ว)
     protected function delete(Request $request): Response
     {
         $this->guard($request);
@@ -205,6 +213,7 @@ final class ModelController extends Controller
         return $this->ok();
     }
 
+    // API ตั้งค่าโมเดลเป็นสาธารณะหรือส่วนตัว
     protected function visibility(Request $request): Response
     {
         $this->guard($request);
@@ -217,6 +226,7 @@ final class ModelController extends Controller
 
     // ── Helpers ──────────────────────────────────────────────────────
 
+    // หาโมเดลที่ผู้เข้าชมมีสิทธิ์ดู ถ้าไม่มีสิทธิ์ได้ null
     /** @return array<string, mixed>|null the model when the current visitor may see it */
     private function visibleModel(int $id, Request $request): ?array
     {
@@ -226,6 +236,7 @@ final class ModelController extends Controller
         return ModelManagement::canView($model, $session->userId(), $session->isAdmin()) ? $model : null;
     }
 
+    // หาโมเดลที่ต้องเป็นของผู้ใช้ปัจจุบัน ถ้าไม่ใช่ตอบ 404
     /** @return array<string, mixed> the requested model, which must belong to the current user */
     private function ownedModel(Request $request): array
     {
@@ -235,6 +246,7 @@ final class ModelController extends Controller
         return (array) $model;
     }
 
+    // เช็กว่าต้องจ่ายเงินก่อนดาวน์โหลดไหม (มีราคา และไม่ใช่เจ้าของหรือแอดมิน)
     /** @param array<string, mixed> $model */
     private function requiresPayment(array $model, Request $request): bool
     {
@@ -245,6 +257,7 @@ final class ModelController extends Controller
             && !ModelManagement::isOwner($session->userId(), (int) $model['user_id']);
     }
 
+    // ถ้ายังไม่ได้ซื้อ/ยังไม่อนุมัติ ให้คืนหน้า 403 แทนการดาวน์โหลด
     /**
      * @param array<string, mixed> $model
      * @return Response|null a "forbidden" page when the visitor has not paid, otherwise null
@@ -270,6 +283,7 @@ final class ModelController extends Controller
         ], 403);
     }
 
+    // ชื่อโมเดลต้องไม่ว่าง
     private function requiredTitle(Request $request): string
     {
         $title = $request->string('title');
@@ -278,6 +292,7 @@ final class ModelController extends Controller
         return $title;
     }
 
+    // ตรวจไฟล์โมเดลและรูปปกที่อัปโหลด (นามสกุล/ขนาด)
     /**
      * @param array<string, mixed>|null $modelFile
      * @param array<string, mixed>|null $thumbFile
@@ -288,6 +303,7 @@ final class ModelController extends Controller
         $this->abortUnless($error === null, 422, 'invalid_upload', (string) $error);
     }
 
+    // บันทึกไฟล์อัปโหลดลง uploads/ ด้วยชื่อสุ่ม แล้วคืนชื่อไฟล์
     /** @param array<string, mixed> $upload */
     private function storeUpload(array $upload, string $suffix, string $failure): string
     {
@@ -297,6 +313,7 @@ final class ModelController extends Controller
         return $name;
     }
 
+    // บันทึกรูปปก ถ้าไม่สำเร็จให้ลบไฟล์ที่บันทึกไปก่อนหน้า
     /**
      * @param array<string, mixed> $upload
      * @param list<string> $cleanup already-stored files to remove when the thumbnail cannot be saved
@@ -311,6 +328,7 @@ final class ModelController extends Controller
         }
     }
 
+    // ลบไฟล์เก่าที่ถูกแทนที่หลังแก้ไข และแปลงไฟล์โมเดลใหม่
     /**
      * Deletes the files a model no longer uses after an edit and refreshes its conversions.
      *
@@ -329,6 +347,7 @@ final class ModelController extends Controller
         }
     }
 
+    // แปลงไฟล์เป็น glTF/GLB/USDZ/OBJ ด้วย Blender แล้วบันทึกชื่อไฟล์ลง DB
     private function applyConversions(int $modelId, string $filename): void
     {
         $formats = $this->converter->convert($filename);

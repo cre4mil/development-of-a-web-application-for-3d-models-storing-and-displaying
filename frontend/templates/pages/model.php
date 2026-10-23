@@ -1,4 +1,5 @@
 <?php
+// หน้าโมเดล: ตัวดู 3D, ปุ่มถูกใจ/บันทึก/ดาวน์โหลด/ซื้อ, คอมเมนต์ และโมเดลแนะนำ — ข้อมูลจาก ModelController::show(), ปุ่มต่างๆ ทำงานผ่าน model.js
 /**
  * Model detail page (Sketchfab-style viewer + actions).
  *
@@ -121,6 +122,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
         </div>
       <?php endif; ?>
 
+<?php /* คอมเมนต์: โหลดและส่งผ่าน model.js → api/social.php */ ?>
       <section class="mt-4" id="comments">
         <h2 class="h5 mb-3"><i class="bi bi-chat-dots me-2"></i>ความคิดเห็น <span class="text-muted fw-normal" id="commentCount">(<?= (int) $model['comment_count'] ?>)</span></h2>
         <?php if ($user['id'] > 0) : ?>
@@ -139,6 +141,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
       </section>
     </div>
 
+<?php /* โมเดลแนะนำ (แท็กคล้ายกัน) */ ?>
     <aside class="col-lg-4">
       <div class="eyebrow mb-3">Suggested 3D models</div>
       <div class="d-flex flex-column gap-1">
@@ -161,6 +164,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
   </div>
 </div>
 
+<?php /* กล่องดาวน์โหลด: เลือกฟอร์แมตแล้วไปที่ download.php */ ?>
 <!-- Download -->
 <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -182,6 +186,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
   </div>
 </div>
 
+<?php /* กล่องแชร์ลิงก์ */ ?>
 <!-- Share -->
 <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -203,6 +208,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
   </div>
 </div>
 
+<?php /* กล่องโค้ด iframe สำหรับฝังโมเดล (model.php?embed=1) */ ?>
 <!-- Embed -->
 <div class="modal fade" id="embedModal" tabindex="-1" aria-labelledby="embedTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -217,6 +223,7 @@ $loginModal = $user['id'] > 0 ? '' : ' data-bs-toggle="modal" data-bs-target="#l
   </div>
 </div>
 
+<?php /* กล่องชำระเงิน: แสดง QR/บัญชี (api/orders.php?action=qr) และส่งสลิป → api/orders.php */ ?>
 <?php if (!$canDownload && $purchase === null && $user['id'] > 0) : ?>
   <!-- Payment -->
   <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentTitle" aria-hidden="true">

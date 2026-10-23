@@ -1,3 +1,4 @@
+// ปุ่มต่างๆ ในหน้าแอดมิน: ลบผู้ใช้/โมเดล, อนุมัติ/ปฏิเสธออเดอร์, จ่ายเงิน, ค่าธรรมเนียม → api/admin.php, api/orders.php
 /**
  * Admin pages: user / model deletion, order approval, payouts and platform fee.
  * Requires core.js.
@@ -7,6 +8,7 @@
 
   const { $, modal } = App;
 
+  // เรียก API แอดมินแล้วแสดงผลสำเร็จ
   const runAdmin = async (url, data, doneMessage) => {
     const result = await App.attempt(() => App.post(url, data));
     if (result) App.toast(result.message || doneMessage, 'success');
@@ -14,6 +16,7 @@
   };
 
   const handlers = {
+    // ลบผู้ใช้ (ถามยืนยันก่อน)
     async delete_user(button) {
       const accepted = await App.confirm({ title: 'ลบผู้ใช้งาน', message: button.dataset.confirm, ok: 'ลบ' });
       if (accepted && await runAdmin('api/admin.php', { action: 'delete_user', id: button.dataset.id }, 'ลบผู้ใช้งานแล้ว')) {
@@ -21,6 +24,7 @@
       }
     },
 
+    // ลบโมเดล (ถามยืนยันก่อน)
     async delete_model(button) {
       const accepted = await App.confirm({ title: 'ลบโมเดล', message: button.dataset.confirm, ok: 'ลบ' });
       if (accepted && await runAdmin('api/admin.php', { action: 'delete_model', id: button.dataset.id }, 'ลบโมเดลแล้ว')) {
@@ -71,17 +75,20 @@
     },
   };
 
+  // คลิกปุ่มที่มี data-admin-action จะเรียกฟังก์ชันใน handlers
   document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-admin-action]');
     if (button) handlers[button.dataset.adminAction]?.(button);
   });
 
+  // ปฏิเสธออเดอร์พร้อมหมายเหตุ
   $('#rejectConfirm')?.addEventListener('click', async (event) => {
     modal('rejectModal').hide();
     const done = await runAdmin('api/orders.php', { action: 'status', order_id: event.currentTarget.dataset.id, status: 'rejected', note: $('#rejectNote').value }, 'ปฏิเสธแล้ว');
     if (done) setTimeout(() => location.reload(), 700);
   });
 
+  // สร้างรายการจ่ายเงิน
   $('#payoutConfirm')?.addEventListener('click', async (event) => {
     const done = await runAdmin('api/admin.php', { action: 'create_payout', creator_id: event.currentTarget.dataset.id, amount: $('#payoutAmount').value }, 'สร้าง Payout แล้ว');
     if (done) {
@@ -90,6 +97,7 @@
     }
   });
 
+  // ยืนยันการโอนพร้อมแนบสลิป
   $('#transferConfirm')?.addEventListener('click', async (event) => {
     const file = $('#transferSlip').files[0];
     if (!file) {
@@ -107,6 +115,7 @@
     }
   });
 
+  // บันทึกค่าธรรมเนียมแพลตฟอร์ม
   $('#feeForm')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const value = $('#feeInput').value;

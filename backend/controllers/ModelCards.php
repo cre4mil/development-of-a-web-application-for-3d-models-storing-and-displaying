@@ -9,9 +9,11 @@ use App\Repositories\SocialRepository;
 use App\Services\ModelFiles;
 use App\Services\ModelManagement;
 
+// เตรียมข้อมูลการ์ดโมเดลในแกลเลอรี (ใช้ร่วมกันหลายหน้า)
 /** Enriches catalog rows with everything the gallery card template needs. */
 final class ModelCards
 {
+    // เพิ่มแท็ก สถานะถูกใจ/บันทึก ความเป็นเจ้าของ ไฟล์ที่ใช้แสดง 3D และขนาดไฟล์ ให้แต่ละโมเดล → partials/model_card.php
     /**
      * @param list<array<string, mixed>> $rows
      * @return list<array<string, mixed>>

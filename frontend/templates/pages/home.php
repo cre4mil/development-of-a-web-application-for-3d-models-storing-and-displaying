@@ -1,4 +1,5 @@
 <?php
+// หน้าแรก: ฟอร์มค้นหา/กรอง (ส่ง GET ไป index.php), การ์ดโมเดล และแบ่งหน้า — ข้อมูลจาก HomeController::index()
 /**
  * Gallery home page.
  *

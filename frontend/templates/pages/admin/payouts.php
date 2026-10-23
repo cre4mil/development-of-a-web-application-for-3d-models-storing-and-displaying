@@ -1,4 +1,5 @@
 <?php
+// หน้าจ่ายเงินครีเอเตอร์: กระเป๋าเงิน, สร้าง/โอน/ปฏิเสธรายการ, ค่าธรรมเนียม (admin.js → api/admin.php)
 /**
  * @var list<array<string, mixed>> $wallets
  * @var list<array<string, mixed>> $payouts

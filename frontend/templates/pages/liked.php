@@ -1,4 +1,5 @@
 <?php
+// หน้าโมเดลที่ฉันถูกใจ — ข้อมูลจาก ProfileController::liked()
 /**
  * @var list<array<string, mixed>> $models
  * @var array{id: int, name: string, admin: bool} $user

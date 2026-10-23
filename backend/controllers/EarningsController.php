@@ -12,6 +12,7 @@ use App\Repositories\CommerceQueries;
 use App\Support\Config;
 use PDO;
 
+// หน้ารายได้ของครีเอเตอร์และการบันทึกบัญชีธนาคาร (creator_earnings.php)
 /** Creator earnings dashboard and payout bank details. */
 final class EarningsController extends Controller
 {
@@ -25,6 +26,7 @@ final class EarningsController extends Controller
         $this->commerce = new CommerceQueries($pdo);
     }
 
+    // หน้ารายได้: ยอดเงิน ยอดขาย กราฟรายเดือน ประวัติรับเงิน → templates/pages/earnings.php
     public function index(Request $request): Response
     {
         if ($request->isPost()) {
@@ -51,6 +53,7 @@ final class EarningsController extends Controller
         ]);
     }
 
+    // บันทึกบัญชีธนาคารสำหรับรับเงินลง DB แล้วกลับไปหน้ารายได้
     public function saveBank(Request $request): Response
     {
         if (($redirect = $this->pageGuard($request)) !== null) {

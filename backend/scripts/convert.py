@@ -8,6 +8,7 @@ def clear_scene():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
 
+# นำเข้าไฟล์โมเดล แล้วส่งออกเป็นทุกฟอร์แมตที่ขอ (ModelConverter.php เป็นคนเรียก)
 def convert_model(input_path, output_paths):
     clear_scene()
     

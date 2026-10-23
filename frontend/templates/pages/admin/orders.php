@@ -1,4 +1,5 @@
 <?php
+// หน้าตรวจออเดอร์: ดูสลิป อนุมัติ/ปฏิเสธ (admin.js → api/orders.php)
 /**
  * @var string $status
  * @var list<array<string, mixed>> $orders

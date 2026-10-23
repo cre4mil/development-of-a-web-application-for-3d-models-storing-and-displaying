@@ -1,3 +1,4 @@
+// วาดกราฟรายได้รายเดือนในหน้ารายได้ (ข้อมูลจาก #chartData ใน earnings.php)
 /** Creator earnings chart (Chart.js is loaded on demand). */
 (() => {
   'use strict';
@@ -9,6 +10,7 @@
   const monthly = JSON.parse(source.textContent);
   let drawn = false;
 
+  // โหลด Chart.js แล้ววาดกราฟ (วาดครั้งเดียว)
   const draw = async () => {
     if (drawn) return;
     drawn = true;

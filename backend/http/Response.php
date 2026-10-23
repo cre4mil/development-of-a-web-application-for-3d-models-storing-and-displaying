@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http;
 
+// ผลลัพธ์ที่จะส่งกลับเบราว์เซอร์ (HTML, JSON, ข้อความ, redirect, ดาวน์โหลดไฟล์)
 /** A fully-built HTTP response; nothing is emitted until send(). */
 final class Response
 {
@@ -16,6 +17,7 @@ final class Response
     ) {
     }
 
+    // สร้าง response แต่ละแบบ
     public static function html(string $html, int $status = 200): self
     {
         return new self($status, ['Content-Type' => 'text/html; charset=utf-8'], $html);
@@ -41,6 +43,7 @@ final class Response
         return new self($status, ['Location' => $location], '');
     }
 
+    // ส่งไฟล์ให้เบราว์เซอร์ดาวน์โหลด
     /** Streams a file from disk as an attachment. */
     public static function download(string $path, string $downloadName): self
     {
@@ -54,6 +57,7 @@ final class Response
         ], '', $path);
     }
 
+    // อ่านสถานะ เนื้อหา header และข้อมูล JSON (ใช้ในเทสต์)
     public function status(): int
     {
         return $this->status;
@@ -77,6 +81,7 @@ final class Response
         return is_array($decoded) ? $decoded : null;
     }
 
+    // ส่ง header และเนื้อหาออกไปที่เบราว์เซอร์จริง
     public function send(): void
     {
         @http_response_code($this->status);

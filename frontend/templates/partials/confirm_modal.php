@@ -1,3 +1,4 @@
+<?php // กล่องยืนยันก่อนทำรายการ เช่น ลบ (เปิดด้วย App.confirm() ใน core.js) ?>
 <!-- Generic confirmation dialog, driven by App.confirm() in core.js -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-sm">

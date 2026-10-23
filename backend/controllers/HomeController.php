@@ -14,6 +14,7 @@ use App\Services\ModelManagement;
 use App\Support\Config;
 use PDO;
 
+// หน้าแรก (แกลเลอรี): ค้นหา กรอง เรียง และแบ่งหน้าโมเดล (index.php)
 /** Public gallery: search, filters, sorting and pagination. */
 final class HomeController extends Controller
 {
@@ -31,6 +32,7 @@ final class HomeController extends Controller
         $this->files = $files ?? new ModelFiles(Config::uploadDir());
     }
 
+    // อ่านตัวกรองจาก URL ค้นหาโมเดลใน DB แล้วส่งไปแสดงที่ templates/pages/home.php
     public function index(Request $request): Response
     {
         $filters = [

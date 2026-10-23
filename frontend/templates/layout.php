@@ -1,4 +1,5 @@
 <?php
+// โครงหน้าเว็บหลักที่ทุกหน้าใช้: head, เมนูบน, ข้อความแจ้งเตือน, เนื้อหาหน้า, footer, กล่อง popup และไฟล์ JS
 /**
  * Shared page shell.
  *
@@ -32,6 +33,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
   <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 </head>
 <body data-auth="<?= $loggedIn ? '1' : '0' ?>" data-page="<?= e($nav) ?>">
+<?php /* เมนูบน: ปุ่ม Upload และเมนูผู้ใช้ (ล็อกอินแล้ว) หรือปุ่ม Login/Sign Up */ ?>
 <header class="site-header">
   <div class="inner">
     <a href="index.php" class="logo">
@@ -79,6 +81,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
   </div>
 </header>
 
+<?php /* ข้อความแจ้งเตือนจาก session → core.js แสดงเป็น toast หรือเปิดกล่องล็อกอิน */ ?>
 <?php foreach ($flash as $item) : ?>
   <div hidden data-flash data-type="<?= e($item['type']) ?>" data-modal="<?= e($item['modal']) ?>"><?= e($item['message']) ?></div>
 <?php endforeach; ?>
@@ -86,6 +89,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
   <div hidden data-flash data-type="success" data-modal="loginModal">กรุณาเข้าสู่ระบบเพื่อใช้งานส่วนนี้</div>
 <?php endif; ?>
 
+<?php /* เนื้อหาของแต่ละหน้า (มาจาก templates/pages/...) */ ?>
 <main>
 <?= $content ?>
 </main>
@@ -99,6 +103,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
 
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
+<?php /* กล่อง popup: ยืนยัน, อัปโหลด/แก้ไขโมเดล (ล็อกอินแล้ว) หรือ ล็อกอิน/สมัคร */ ?>
 <?= partial('confirm_modal') ?>
 <?php if ($loggedIn) : ?>
   <?= partial('upload_modal', ['csrf' => $csrf]) ?>
@@ -107,6 +112,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
   <?= partial('auth_modals', ['next' => $next]) ?>
 <?php endif; ?>
 
+<?php /* Bootstrap, core.js และ JS เฉพาะหน้าที่ controller ส่งมา */ ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="<?= e(asset('js/core.js')) ?>"></script>
 <?php foreach ($scripts as $script) : ?>

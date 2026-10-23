@@ -6,12 +6,14 @@ namespace App\Services;
 
 use App\Repositories\PayoutStore;
 
+// ขั้นตอนการจ่ายเงินให้ครีเอเตอร์
 final class PayoutService
 {
     public function __construct(private readonly PayoutStore $store)
     {
     }
 
+    // สร้างรายการจ่าย: ย้ายเงินจากยอดถอนได้ไปเป็นยอดรอจ่าย
     public function create(int $creatorId, float $amount, int $adminId): ?int
     {
         $balance = $this->store->availableBalance($creatorId);
@@ -25,6 +27,7 @@ final class PayoutService
         });
     }
 
+    // ยืนยันโอนแล้ว: บันทึกสลิปและตัดยอดรอจ่าย
     public function transfer(int $payoutId, int $adminId, string $slipPath): bool
     {
         $payout = $this->store->findRequest($payoutId);
@@ -40,6 +43,7 @@ final class PayoutService
         return true;
     }
 
+    // ปฏิเสธ: คืนยอดรอจ่ายกลับเป็นยอดถอนได้
     public function reject(int $payoutId, string $note): bool
     {
         $payout = $this->store->findRequest($payoutId);

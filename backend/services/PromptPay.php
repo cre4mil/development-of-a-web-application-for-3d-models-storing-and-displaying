@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// สร้างข้อมูล QR พร้อมเพย์ (มาตรฐาน EMVCo) ส่งไปให้ JS วาดเป็น QR code
 /** Builds EMVCo PromptPay payloads (phone number or national ID) for QR codes. */
 final class PromptPay
 {
+    // สร้าง payload QR จากเบอร์โทร/เลขบัตรประชาชน และจำนวนเงิน
     public static function payload(string $promptPayId, float $amount = 0): string
     {
         $id = (string) preg_replace('/\D/', '', $promptPayId);
@@ -31,11 +33,13 @@ final class PromptPay
         return $data . sprintf('%04X', self::crc16($data));
     }
 
+    // ประกอบข้อมูลแบบ tag + ความยาว + ค่า
     public static function tlv(string $tag, string $value): string
     {
         return $tag . sprintf('%02d', strlen($value)) . $value;
     }
 
+    // คำนวณ checksum CRC-16 ท้าย payload
     /** CRC-16/CCITT-FALSE as required by the EMVCo QR specification. */
     public static function crc16(string $data): int
     {

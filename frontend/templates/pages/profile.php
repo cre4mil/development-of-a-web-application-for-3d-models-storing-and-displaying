@@ -1,4 +1,5 @@
 <?php
+// หน้าโปรไฟล์: แท็บโมเดลของฉัน, ที่บันทึกไว้ และสถิติ — ข้อมูลจาก ProfileController::index()
 /**
  * @var list<array<string, mixed>> $mine
  * @var list<array<string, mixed>> $saved

@@ -6,16 +6,19 @@ namespace App\Http;
 
 use App\Support\Config;
 
+// แสดงผล template ใน frontend/templates และครอบหน้าด้วย layout.php
 /** Renders PHP templates from frontend/templates and wraps pages in the shared layout. */
 final class View
 {
     private static ?string $root = null;
 
+    // เปลี่ยนโฟลเดอร์ template (ใช้ในเทสต์)
     public static function useRoot(?string $root): void
     {
         self::$root = $root;
     }
 
+    // โหลดไฟล์ template พร้อมตัวแปร แล้วคืนเป็น HTML
     /** @param array<string, mixed> $data */
     public static function render(string $template, array $data = []): string
     {
@@ -33,6 +36,7 @@ final class View
         return (string) ob_get_clean();
     }
 
+    // สร้างหน้าเต็ม: ใส่ข้อมูลผู้ใช้ CSRF ข้อความแจ้งเตือน แล้วครอบด้วย layout.php
     /**
      * Renders a page template inside the site layout.
      *
@@ -60,6 +64,7 @@ final class View
         return Response::html(self::render('layout', $layout), $status);
     }
 
+    // ดึงข้อความแจ้งเตือนครั้งเดียวจาก session (เช่น ล็อกอินผิด สมัครสำเร็จ)
     /**
      * Pops one-shot messages set by controllers.
      *

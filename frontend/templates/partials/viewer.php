@@ -1,4 +1,5 @@
 <?php
+// พื้นที่แสดงโมเดล 3D และแถบเครื่องมือ (viewer.js เป็นคนโหลดและวาดโมเดล)
 /**
  * 3D viewer stage (bound by assets/js/viewer.js).
  *

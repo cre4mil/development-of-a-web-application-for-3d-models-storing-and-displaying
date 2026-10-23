@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+// อ่านค่าตั้งค่าจาก environment / ไฟล์ .env
 /**
  * Environment-driven configuration.
  *
@@ -18,11 +19,13 @@ final class Config
     /** @var array<string, string> */
     private static array $overrides = [];
 
+    // โฟลเดอร์หลักของโปรเจกต์
     public static function root(): string
     {
         return dirname(__DIR__, 2);
     }
 
+    // อ่านค่าตั้งค่า ถ้าไม่มีใช้ค่า default
     public static function env(string $key, string $default = ''): string
     {
         if (isset(self::$overrides[$key])) {
@@ -33,6 +36,7 @@ final class Config
         return $value === false || $value === '' ? $default : $value;
     }
 
+    // ตั้งค่าแทนชั่วคราว (ใช้ในเทสต์)
     /** Overrides a value for the current process (used by tests). */
     public static function set(string $key, ?string $value): void
     {
@@ -43,6 +47,7 @@ final class Config
         self::$overrides[$key] = $value;
     }
 
+    // อ่านไฟล์ .env เข้ามา (ไม่ทับค่า environment จริง)
     /** Loads KEY=VALUE pairs from a dotenv file without overriding real environment variables. */
     public static function loadEnvFile(string $path): void
     {
@@ -59,6 +64,7 @@ final class Config
         }
     }
 
+    // ค่าตั้งค่าที่ใช้บ่อย: โฟลเดอร์อัปโหลด ข้อมูลรับเงิน และที่อยู่ Blender
     public static function uploadDir(): string
     {
         return rtrim(self::env('UPLOAD_DIR', self::root() . '/frontend/uploads'), "/\\") . '/';

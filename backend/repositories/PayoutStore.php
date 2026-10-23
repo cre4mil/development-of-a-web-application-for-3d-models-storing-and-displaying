@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+// สัญญา (interface) ของที่เก็บข้อมูลการจ่ายเงิน ที่ PayoutService ใช้ — ตัวจริงคือ PdoPayoutRepository
 interface PayoutStore
 {
     public function availableBalance(int $creatorId): ?float;

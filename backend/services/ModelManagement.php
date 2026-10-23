@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// กฎเกี่ยวกับโมเดล: ไลเซนส์ สิทธิ์ดู ราคา แท็ก ชื่อไฟล์ดาวน์โหลด และไฟล์ที่ใช้แสดง 3D
 final class ModelManagement
 {
     public const DEFAULT_LICENSE = 'CC BY';
@@ -20,6 +21,7 @@ final class ModelManagement
         'All Rights Reserved' => ['All Rights Reserved', null],
     ];
 
+    // รหัสไลเซนส์ทั้งหมด / ชื่อและลิงก์ของไลเซนส์
     /** @return list<string> */
     public static function licenseCodes(): array
     {
@@ -34,11 +36,13 @@ final class ModelManagement
         return ['name' => $name, 'url' => $url];
     }
 
+    // เช็กว่าเป็นเจ้าของโมเดล
     public static function isOwner(int $userId, int $ownerId): bool
     {
         return $userId > 0 && $userId === $ownerId;
     }
 
+    // โมเดลสาธารณะทุกคนดูได้ โมเดลซ่อนดูได้เฉพาะเจ้าของและแอดมิน
     /**
      * Public models are visible to everyone; hidden ones only to their owner and admins.
      *
@@ -50,6 +54,7 @@ final class ModelManagement
             && ((int) $model['is_public'] === 1 || $isAdmin || self::isOwner($userId, (int) $model['user_id']));
     }
 
+    // แปลงราคา/ไลเซนส์/แท็กที่ผู้ใช้กรอกให้อยู่ในรูปแบบที่ถูกต้อง
     public static function normalizePrice(mixed $price): float
     {
         return max(0, round((float) $price, 2));
@@ -70,6 +75,7 @@ final class ModelManagement
         return array_values(array_unique($tags));
     }
 
+    // ตั้งชื่อไฟล์ตอนดาวน์โหลดจากชื่อโมเดล
     /** "Old Telephone" + "abc.glb" => "Old_Telephone.glb". */
     public static function downloadName(string $title, string $storedName): string
     {
@@ -78,6 +84,7 @@ final class ModelManagement
         return ($slug === '' ? 'model' : $slug) . '.' . strtolower(pathinfo($storedName, PATHINFO_EXTENSION));
     }
 
+    // เลือกไฟล์ที่ตัวดู 3D จะโหลด (ใช้ GLB ที่แปลงแล้วถ้ามี)
     /**
      * Picks the file the 3D viewer should load: the GLB conversion when present (self-contained,
      * textures embedded), otherwise the uploaded original.
@@ -93,6 +100,7 @@ final class ModelManagement
         return ['file' => $file, 'ext' => strtolower(pathinfo($file, PATHINFO_EXTENSION))];
     }
 
+    // ฟอร์แมตที่ดาวน์โหลดได้จริง (มีไฟล์อยู่บนเซิร์ฟเวอร์)
     /**
      * Downloadable formats that actually exist on disk.
      *

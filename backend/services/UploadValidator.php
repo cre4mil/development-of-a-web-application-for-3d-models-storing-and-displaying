@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+// ตรวจไฟล์โมเดลและรูปปกที่อัปโหลด
 final class UploadValidator
 {
     public const MAX_IMAGE_BYTES = 5_242_880;
 
+    // ตรวจไฟล์โมเดล: ต้องมี นามสกุลถูก และไม่ error
     /** @param array{name?: string, error?: int, size?: int}|null $file */
     public static function validateModel(?array $file): ?string
     {
@@ -25,6 +27,7 @@ final class UploadValidator
         return $error;
     }
 
+    // ตรวจรูปปก: ไม่ใส่ก็ได้ แต่ถ้าใส่ต้องเป็นรูปที่ถูกต้อง
     /**
      * Thumbnails are optional: a missing file is valid, a broken one is not.
      *
@@ -47,11 +50,13 @@ final class UploadValidator
         return $error;
     }
 
+    // เช็กว่ามีการเลือกไฟล์มา
     public static function hasFile(?array $file): bool
     {
         return $file !== null && ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
     }
 
+    // รายการนามสกุลไฟล์โมเดลที่รองรับ (ใช้ใน accept ของ input)
     public static function modelFormats(): string
     {
         return '.' . implode(' .', Security::MODEL_EXTENSIONS);

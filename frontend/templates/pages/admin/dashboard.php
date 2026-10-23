@@ -1,4 +1,5 @@
 <?php
+// แดชบอร์ดแอดมิน: สถิติ, ออเดอร์, ผู้ใช้, โมเดล (ปุ่มลบทำงานผ่าน admin.js → api/admin.php)
 /**
  * @var array{users: int, models: int, pending: int, revenue: float, ready: int} $stats
  * @var list<array<string, mixed>> $orders
