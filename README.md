@@ -44,8 +44,6 @@ SonarCloud (`.github/workflows/sonar.yml`).
 
 ## Project layout
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the request flow, folder map and conventions.
-
 ## Security notes
 
 * `.env` is git-ignored; never commit tokens. Rotate any token that was committed in the past.
