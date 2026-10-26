@@ -72,7 +72,6 @@ final class SlipVerifier
             CURLOPT_HTTPHEADER => $branchId === '' ? [] : ['x-authorization: ' . $branchId],
         ]);
         $body = curl_exec($curl);
-        curl_close($curl);
 
         return is_string($body) ? $body : false;
     }
