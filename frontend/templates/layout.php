@@ -25,11 +25,10 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
   <meta name="csrf-token" content="<?= e($csrf) ?>">
   <title><?= e($title) ?></title>
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd" crossorigin="anonymous">
+  <?php /* ไลบรารีและฟอนต์เก็บไว้ใน assets/vendor เว็บจึงใช้งานได้โดยไม่ต้องต่ออินเทอร์เน็ต */ ?>
+  <link rel="stylesheet" href="assets/vendor/fonts/fonts.css">
+  <link rel="stylesheet" href="assets/vendor/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH">
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons@1.11.1/font/bootstrap-icons.css" integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd">
   <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
 </head>
 <body data-auth="<?= $loggedIn ? '1' : '0' ?>" data-page="<?= e($nav) ?>">
@@ -113,7 +112,7 @@ $scripts = $loggedIn ? array_values(array_unique(['viewer.js', ...$scripts, 'upl
 <?php endif; ?>
 
 <?php /* Bootstrap, core.js และ JS เฉพาะหน้าที่ controller ส่งมา */ ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="assets/vendor/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"></script>
 <script src="<?= e(asset('js/core.js')) ?>"></script>
 <?php foreach ($scripts as $script) : ?>
   <script src="<?= e(asset('js/' . $script)) ?>"></script>

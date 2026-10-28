@@ -6,7 +6,7 @@
   const source = document.getElementById('chartData');
   if (!source) return;
 
-  const CHART = ['https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js', 'sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g'];
+  const CHART = ['assets/vendor/chart.js@4.4.0/dist/chart.umd.min.js', 'sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g'];
   const monthly = JSON.parse(source.textContent);
   let drawn = false;
 

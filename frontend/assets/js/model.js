@@ -124,7 +124,7 @@
   const payment = document.getElementById('paymentModal');
   if (payment) {
     const BANKS = { kbank: 'ธนาคารกสิกรไทย (KBANK)', scb: 'ธนาคารไทยพาณิชย์ (SCB)', bbl: 'ธนาคารกรุงเทพ (BBL)', ktb: 'ธนาคารกรุงไทย (KTB)', krungsri: 'ธนาคารกรุงศรีอยุธยา (BAY)' };
-    const QR_LIB = ['https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js', 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k'];
+    const QR_LIB = ['assets/vendor/qrcode-generator@1.4.4/qrcode.js', 'sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k'];
 
     // เปิดกล่องชำระเงิน: ดึงข้อมูลจาก api/orders.php?action=qr แล้ววาด QR หรือแสดงเลขบัญชี
     payment.addEventListener('show.bs.modal', async () => {

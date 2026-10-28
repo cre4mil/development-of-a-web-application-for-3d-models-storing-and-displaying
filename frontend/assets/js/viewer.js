@@ -10,7 +10,7 @@
 (() => {
   'use strict';
 
-  const BASE = 'https://cdn.jsdelivr.net/npm/three@0.130.0';
+  const BASE = 'assets/vendor/three@0.130.0';
   const LIBS = {
     three: [`${BASE}/build/three.min.js`, 'sha384-XIeZcIwWx2i8CVKHEeXtUv7cYAaKNZEqfaxJBdCjo0PcBsE/VWGKsa2SFDKvtW5S'],
     orbit: [`${BASE}/examples/js/controls/OrbitControls.js`, 'sha384-fcwmxprR7ntks0MLHmwtgWca24P1SKyvyrYWvHvD6ciUjdZ1iqG0YVYpI0KfpwB1'],
@@ -51,16 +51,15 @@
   };
 
   const scripts = new Map();
-  // โหลดไลบรารีภายนอก
+  // โหลดไลบรารีจาก assets/vendor (ตรวจ integrity ทุกไฟล์)
   const loadScript = ([src, integrity]) => {
     if (!scripts.has(src)) {
       scripts.set(src, new Promise((resolve, reject) => {
         const tag = document.createElement('script');
         tag.src = src;
         tag.integrity = integrity;
-        tag.crossOrigin = 'anonymous';
         tag.onload = resolve;
-        tag.onerror = () => reject(new Error('โหลดไลบรารี 3D ไม่สำเร็จ — ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต'));
+        tag.onerror = () => reject(new Error('โหลดไลบรารี 3D ไม่สำเร็จ — กรุณารีเฟรชหน้าเว็บ'));
         document.head.append(tag);
       }));
     }
